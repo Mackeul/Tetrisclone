@@ -5,6 +5,7 @@
 #include "resource.h"
 #include <windows.h>
 #include <iostream>
+#include <math.h>
 #include "bitmapobject.h"
 #include "framework.h"
 #include "Piece.h"
@@ -15,7 +16,7 @@ const int TILESIZE = 16;
 // now for the map...
 const int MAPWIDTH = 10;
 const int MAPHEIGHT = 30;
-const int GREY = 8;
+const int PREVIEWAREAWIDTH = 8;
 
 class Game {
 
@@ -46,7 +47,8 @@ private:
 	static Game* gameInstance;
 
 	ULONGLONG start_time;
-	bool GAMESTARTED;
+
+	int score = 0;
 
 	bool GAMEPAUSED = false;
 
@@ -65,5 +67,6 @@ private:
 	void DrawMap();
 
 	void DrawTile(int, int, int);
-	void DrawChar(int, int, const char*);
+	void DrawChar(int, int, const char);
+	void PrintScore();
 };

@@ -14,7 +14,7 @@ Game* Game::Instance() {
 
 void Game::Tick() {
 
-	if (GAMEPAUSED)  //do nothing
+	if (this->IsPaused())  //do nothing
 		return;
 
 	if ((GetTickCount64() - start_time) > 1000) {
@@ -33,19 +33,18 @@ bool Game::Init(HWND hWndMain) {
 	//set the client area size
 	RECT rcTemp;
 		
-	SetRect(&rcTemp, 0, 0, MAPWIDTH * TILESIZE + TILESIZE * GREY, MAPHEIGHT * TILESIZE); // 160x480 client area
+	SetRect(&rcTemp, 0, 0, (MAPWIDTH + PREVIEWAREAWIDTH) * TILESIZE, MAPHEIGHT * TILESIZE); // 160x480 client area
 	AdjustWindowRect(&rcTemp, WS_BORDER | WS_SYSMENU | WS_CAPTION | WS_VISIBLE, FALSE); //adjust the window size based on desired client area
 	SetWindowPos(hWndMain, NULL, 0, 0, rcTemp.right - rcTemp.left, rcTemp.bottom - rcTemp.top, SWP_NOMOVE); //set the window width and height
 
 	//create map image
 	HDC hdc = GetDC(hWndMain);
-	bmoMap.Create(hdc, MAPWIDTH * TILESIZE + TILESIZE * GREY, MAPHEIGHT * TILESIZE);
+	bmoMap.Create(hdc, (MAPWIDTH + PREVIEWAREAWIDTH) * TILESIZE, MAPHEIGHT * TILESIZE);
 	FillRect(bmoMap, &rcTemp, (HBRUSH)GetStockObject(BLACK_BRUSH));
 	ReleaseDC(hWndMain, hdc);
 
 	bmoBlocks.Load(NULL, L"blocks.bmp");
 	this->NewGame();
-	this->DrawMap();
 
 	return(true); //return success
 
@@ -53,37 +52,30 @@ bool Game::Init(HWND hWndMain) {
 
 void Game::NewGame() {   // Game start?
 
-	int i, j;
-
 	start_time = GetTickCount64();
-	GAMESTARTED = false;
-
+	
 	//start out the map
 	for (int x = 0; x < MAPWIDTH; x++) {
 		for (int y = 0; y < MAPHEIGHT; y++) {
 			if (y == MAPHEIGHT) { //makes Y-collision easier
-				Map[x][y] = TILEGREY;
+				Map[x][y] = Tile::GREY;
 			}
 			else {
-				Map[x][y] = TILEBLACK;
+				Map[x][y] = Tile::BLACK;
 			}
 		}
 	}
-	if (GAMESTARTED) {
-		//Set new piece to preview piece
-		sPiece = sPrePiece;
-	}
-	else {
-		//Create the first piece
-		sPiece.Create(sPiece);
-		GAMESTARTED = true;
-	}
-	sPiece.setPosition(MAPWIDTH / 2 - 2, -1);
-	
+
 	//Create the preview piece and set position
 	sPrePiece.Create(sPrePiece);
-	sPrePiece.setPosition(MAPWIDTH + GREY / 4, GREY / 4);
+	sPrePiece.setPosition(MAPWIDTH + PREVIEWAREAWIDTH / 4, PREVIEWAREAWIDTH / 4);
+	this->DrawMap();
 
+	//this->TogglePause();
+
+	sPiece.Create(sPiece);
+	sPiece.setPosition(MAPWIDTH / 2 - 2, -1);
+	this->DrawMap();
 }
 
 void Game::DrawMap() { //draw the screen
@@ -91,19 +83,26 @@ void Game::DrawMap() { //draw the screen
 	int xmy = 0, ymx = 0;
 
 	//place the toolbar
-	for (xmy = MAPWIDTH; xmy < MAPWIDTH + GREY; xmy++) {
+	for (xmy = MAPWIDTH; xmy < MAPWIDTH + PREVIEWAREAWIDTH; xmy++) {
 		for (ymx = 0; ymx < MAPHEIGHT; ymx++) {
-			this->DrawTile(xmy, ymx, TILEGREY);
+			this->DrawTile(xmy, ymx, Tile::GREY);
 		}
 	}
 
-	this->DrawChar(MAPWIDTH + GREY + 1, GREY / 4, "A");
-	
+	//Write score
+	this->DrawChar(TILESIZE + 0, 0, 'S');
+	this->DrawChar(TILESIZE + 1, 0, 'C');
+	this->DrawChar(TILESIZE + 2, 0, 'O');
+	this->DrawChar(TILESIZE + 3, 0, 'R');
+	this->DrawChar(TILESIZE + 4, 0, 'E');
 
+	this->PrintScore();
+	
+	
 	//draw the preview block
 	for (xmy = 0; xmy < 4; xmy++) {
 		for (ymx = 0; ymx < 4; ymx++) {
-			if (sPrePiece.size[xmy][ymx] != TILENODRAW) {
+			if (sPrePiece.size[xmy][ymx] != Tile::NODRAW) {
 				this->DrawTile(sPrePiece.x + xmy, sPrePiece.y + ymx, sPrePiece.size[xmy][ymx]);
 			}
 		}
@@ -120,7 +119,7 @@ void Game::DrawMap() { //draw the screen
 	//draw the moving block 
 	for (xmy = 0; xmy < 4; xmy++) {
 		for (ymx = 0; ymx < 4; ymx++) {
-			if (sPiece.size[xmy][ymx] != TILENODRAW) {
+			if (sPiece.size[xmy][ymx] != Tile::NODRAW) {
 				this->DrawTile(sPiece.x + xmy, sPiece.y + ymx, sPiece.size[xmy][ymx]);
 			}
 		}
@@ -130,13 +129,14 @@ void Game::DrawMap() { //draw the screen
 
 void Game::RemoveRow(int row) {
 	int x, y;
-	int counter = 0;
 
 	for (x = 0; x < MAPWIDTH; x++) {
 		for (y = row; y > 0; y--) {
 			Map[x][y] = Map[x][y - 1];
 		}
 	}
+
+	this->score += 10;
 }
 
 void Game::DrawTile(int x, int y, int tile) { // put a tile
@@ -149,16 +149,31 @@ void Game::DrawTile(int x, int y, int tile) { // put a tile
 
 }
 
-void Game::DrawChar(int x, int y, const char* letter) { // put a character
+void Game::DrawChar(int x, int y, const char letter) { // put a character
 
-	int tile = 1; //letter;   // Translate the letter character to position in bitmap  A=65
+	const int letterHeight = 16;
+	const int letterWidth = 10;
+	int letterTile;
+	int letterLine;
 
-	//mask first
-	//maybe not BitBlt(bmoMap, x * TILESIZE, y * TILESIZE, TILESIZE, TILESIZE, bmoBlocks, tile * TILESIZE, TILESIZE, SRCAND);
+	if (isalpha(letter)) {
+		letterTile = (int)letter - 65; // Translate the letter character to position in bitmap  ASCII A=65, pos A= 3rd line position 0
+		letterLine = letterTile / 14;  // We put 14 first letters on line 1, the rest on line 2 (after first 2 lines of tiles).
+		letterTile = (letterTile % 14);
+	} else if (isdigit(letter)) {
+		letterTile = (int)letter - 48;  // Digits are on line 3
+		letterLine = 2;
+	} else if (letter == '|') {  // Special pipe character also on line 3 after digits.   
+		letterTile = 11;
+		letterLine = 2;
+	}
+	else {
+		letterTile = 0;
+		letterLine = 0;
+	}
 
-	//then image
-	BitBlt(bmoMap, x * TILESIZE, y * TILESIZE, TILESIZE, TILESIZE, bmoBlocks, 0, tile * TILESIZE * 3, SRCAND);
-
+	BitBlt(bmoMap, x * letterWidth, y * letterHeight, letterWidth, letterHeight, bmoBlocks, letterTile*letterWidth, letterLine * letterHeight +  2 * TILESIZE, SRCAND);
+	
 }
 
 void Game::RedrawMap(HWND hwnd) {
@@ -170,7 +185,7 @@ void Game::RedrawMap(HWND hwnd) {
 	HDC hdc = BeginPaint(hwnd, &ps);
 
 	//redraw the map
-	BitBlt(hdc, 0, 0, TILESIZE * MAPWIDTH + TILESIZE * GREY, TILESIZE * MAPHEIGHT, bmoMap, 0, 0, SRCCOPY);
+	BitBlt(hdc, 0, 0, TILESIZE * MAPWIDTH + TILESIZE * PREVIEWAREAWIDTH, TILESIZE * MAPHEIGHT, bmoMap, 0, 0, SRCCOPY);
 
 	//end painting
 	EndPaint(hwnd, &ps);
@@ -191,7 +206,7 @@ void Game::MoveBlock(int x, int y) {
 				//new block time!  add this one to the list!
 				for (i = 0; i < 4; i++) {
 					for (j = 0; j < 4; j++) {
-						if (sPiece.size[i][j] != TILENODRAW) {
+						if (sPiece.size[i][j] != Tile::NODRAW) {
 							Map[sPiece.x + i][sPiece.y + j] = sPiece.size[i][j];
 						}
 					}
@@ -200,7 +215,7 @@ void Game::MoveBlock(int x, int y) {
 				for (j = 0; j < MAPHEIGHT; j++) {
 					bool filled = true;
 					for (i = 0; i < MAPWIDTH; i++) {
-						if (Map[i][j] == TILEBLACK) {
+						if (Map[i][j] == Tile::BLACK) {
 							filled = false;
 						}
 					}
@@ -212,15 +227,14 @@ void Game::MoveBlock(int x, int y) {
 				if (killblock) {
 					for (i = 0; i < 4; i++) {
 						for (j = 0; j < 4; j++) {
-							sPiece.size[i][j] = TILENODRAW;
+							sPiece.size[i][j] = Tile::NODRAW;
 						}
 					}
 				}
 				sPiece = sPrePiece;
 				sPiece.setPosition(MAPWIDTH / 2 - 2, -1);
-
 				sPrePiece.Create(sPrePiece);
-				sPrePiece.setPosition(MAPWIDTH + GREY / 4, GREY / 4);
+				sPrePiece.setPosition(MAPWIDTH + PREVIEWAREAWIDTH / 4, PREVIEWAREAWIDTH / 4);
 
 			}
 		}
@@ -257,7 +271,7 @@ bool Game::CollisionTest(int nx, int ny,const Piece& aPiece) {
 	//Boundary collision
 	for (i = 0; i < 4; i++) {
 		for (j = 0; j < 4; j++) {
-			if (aPiece.size[i][j] != TILENODRAW) {
+			if (aPiece.size[i][j] != Tile::NODRAW) {
 				if (newx + i < 0 || newx + i > MAPWIDTH - 1
 					|| newy + j < 0 || newy + j > MAPHEIGHT - 1) {
 					return true;
@@ -271,8 +285,8 @@ bool Game::CollisionTest(int nx, int ny,const Piece& aPiece) {
 		for (y = 0; y < MAPHEIGHT; y++) {
 			if (x >= newx && x < newx + 4) {
 				if (y >= newy && y < newy + 4) {
-					if (Map[x][y] != TILEBLACK) {
-						if (aPiece.size[x - newx][y - newy] != TILENODRAW) {
+					if (Map[x][y] != Tile::BLACK) {
+						if (aPiece.size[x - newx][y - newy] != Tile::NODRAW) {
 							return true;
 						}
 					}
@@ -296,4 +310,19 @@ void Game::TogglePause() {
 		//display paused graphic
 	}
 
+}
+
+void Game::PrintScore() {
+
+	//this->DrawChar(TILESIZE + 6, 0,(const char)score + '0');
+
+	//split the score into it's digits
+	int number = this->score;
+	int i = 6;
+	while (i <= 11) {
+		int aNum = (int)pow(10, (11 - i)); 
+		this->DrawChar(TILESIZE + i, 0,(number / aNum) % 10 + '0'); 
+		number = number % aNum;
+		i++;
+	}
 }

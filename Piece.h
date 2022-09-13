@@ -9,16 +9,18 @@
 #include "framework.h"
 
 // variables for future bitmap.  We need 9 colors, and 1 for Do Not Draw ... so 10 total.
-const int TILENODRAW = -1;
-const int TILEBLACK = 0;
-const int TILEGREY = 1;
-const int TILEBLUE = 2;
-const int TILERED = 3;
-const int TILEGREEN = 4;
-const int TILEYELLOW = 5;
-const int TILEWHITE = 6;
-const int TILESTEEL = 7;
-const int TILEPURPLE = 8;
+enum Tile : int {
+    NODRAW = -1,
+    BLACK = 0,
+    GREY = 1,
+    BLUE = 2,
+    RED = 3,
+    GREEN = 4,
+    YELLOW = 5,
+    WHITE = 6,
+    STEEL = 7,
+    PURPLE = 8
+};
 
 struct Piece {
     int size[4][4];
@@ -27,8 +29,9 @@ struct Piece {
 
     void Create(Piece&);
     void setPosition(int, int);
-    void Move(int , int );
+    void Move(int, int);
     void Rotate();
+    void Delete();
 
 };
 
