@@ -1,6 +1,6 @@
 // TetrisClone.cpp : Defines the entry point for the application.
 //
-//#include <iostream>
+#include "Game.h"
 #include "TetrisClone.h"
 
 static Game* theGame = Game::Instance();
@@ -114,8 +114,8 @@ LRESULT CALLBACK TheWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
     if (theGame->IsPaused()) {
         if (uMsg == WM_KEYDOWN && wParam == VK_PAUSE) {
             theGame->TogglePause();
+            return(0);
         }
-        return(0);
     }
     switch (uMsg) {
     case WM_KEYDOWN: {

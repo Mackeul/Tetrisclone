@@ -6,6 +6,12 @@
 #include <windows.h>
 #include <iostream>
 #include <math.h>
+
+// To play music
+#include <mmsystem.h>
+#include <mciapi.h>
+#pragma comment(lib, "Winmm.lib")
+
 #include "bitmapobject.h"
 #include "framework.h"
 #include "Piece.h"
@@ -69,4 +75,5 @@ private:
 	void DrawTile(int, int, int);
 	void DrawChar(int, int, const char);
 	void PrintScore();
+	void PrintPaused();
 };

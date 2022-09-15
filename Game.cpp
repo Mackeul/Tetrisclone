@@ -1,6 +1,5 @@
-#include "BitmapObject.h"
+
 #include "Game.h"
-#include "Piece.h"
 
 Game* Game::gameInstance = 0;
 
@@ -17,7 +16,7 @@ void Game::Tick() {
 	if (this->IsPaused())  //do nothing
 		return;
 
-	if ((GetTickCount64() - start_time) > 1000) {
+	if ((GetTickCount64() - start_time) > (1000 - this->score)) {
 		this->MoveBlock(0, 1);
 		start_time = GetTickCount64();
 	}
@@ -26,6 +25,8 @@ void Game::Tick() {
 
 void Game::Done() {
 	//clean up code goes here
+	mciSendString(L"stop mp3", NULL, 0, NULL);
+	mciSendString(L"close mp3", NULL, 0, NULL);
 }
 
 bool Game::Init(HWND hWndMain) {
@@ -46,13 +47,17 @@ bool Game::Init(HWND hWndMain) {
 	bmoBlocks.Load(NULL, L"blocks.bmp");
 	this->NewGame();
 
+	mciSendString(L"open \"tetris.mp3\" type mpegvideo alias mp3", NULL, 0, NULL);
+	mciSendString(L"play mp3 repeat", NULL, 0, NULL);
+
 	return(true); //return success
 
 }
 
 void Game::NewGame() {   // Game start?
 
-	start_time = GetTickCount64();
+	this->start_time = GetTickCount64();
+	this->score = 0;
 	
 	//start out the map
 	for (int x = 0; x < MAPWIDTH; x++) {
@@ -76,6 +81,8 @@ void Game::NewGame() {   // Game start?
 	sPiece.Create(sPiece);
 	sPiece.setPosition(MAPWIDTH / 2 - 2, -1);
 	this->DrawMap();
+
+	 
 }
 
 void Game::DrawMap() { //draw the screen
@@ -89,15 +96,10 @@ void Game::DrawMap() { //draw the screen
 		}
 	}
 
-	//Write score
-	this->DrawChar(TILESIZE + 0, 0, 'S');
-	this->DrawChar(TILESIZE + 1, 0, 'C');
-	this->DrawChar(TILESIZE + 2, 0, 'O');
-	this->DrawChar(TILESIZE + 3, 0, 'R');
-	this->DrawChar(TILESIZE + 4, 0, 'E');
-
 	this->PrintScore();
-	
+	if (this->IsPaused()) {
+		this->PrintPaused();
+	}
 	
 	//draw the preview block
 	for (xmy = 0; xmy < 4; xmy++) {
@@ -157,11 +159,11 @@ void Game::DrawChar(int x, int y, const char letter) { // put a character
 	int letterLine;
 
 	if (isalpha(letter)) {
-		letterTile = (int)letter - 65; // Translate the letter character to position in bitmap  ASCII A=65, pos A= 3rd line position 0
+		letterTile = (int)letter - 65; // Translate the letter character to position in bitmap  ASCII A=65, pos A= 3rd line in bitmap position 0
 		letterLine = letterTile / 14;  // We put 14 first letters on line 1, the rest on line 2 (after first 2 lines of tiles).
 		letterTile = (letterTile % 14);
 	} else if (isdigit(letter)) {
-		letterTile = (int)letter - 48;  // Digits are on line 3
+		letterTile = (int)letter - 48;  // Digits are on line 3.  ASCII 0=48.
 		letterLine = 2;
 	} else if (letter == '|') {  // Special pipe character also on line 3 after digits.   
 		letterTile = 11;
@@ -305,16 +307,43 @@ bool Game::IsPaused() {
 void Game::TogglePause() {
 
 	GAMEPAUSED = !GAMEPAUSED;
-
 	if (GAMEPAUSED) {
-		//display paused graphic
+		mciSendString(L"pause mp3", NULL, 0, NULL);
+		this->PrintPaused();
+	}
+	else {
+		mciSendString(L"resume mp3", NULL, 0, NULL);
 	}
 
 }
 
+void Game::PrintPaused() {
+
+	//display paused info
+
+	this->DrawChar(TILESIZE + 0, MAPHEIGHT / 4 + 4, 'G');
+	this->DrawChar(TILESIZE + 1, MAPHEIGHT / 4 + 4, 'A');
+	this->DrawChar(TILESIZE + 2, MAPHEIGHT / 4 + 4, 'M');
+	this->DrawChar(TILESIZE + 3, MAPHEIGHT / 4 + 4, 'E');
+	this->DrawChar(TILESIZE + 5, MAPHEIGHT / 4 + 4, 'P');
+	this->DrawChar(TILESIZE + 6, MAPHEIGHT / 4 + 4, 'A');
+	this->DrawChar(TILESIZE + 7, MAPHEIGHT / 4 + 4, 'U');
+	this->DrawChar(TILESIZE + 8, MAPHEIGHT / 4 + 4, 'S');
+	this->DrawChar(TILESIZE + 9, MAPHEIGHT / 4 + 4, 'E');
+	this->DrawChar(TILESIZE + 10, MAPHEIGHT / 4 + 4, 'D');
+
+	this->DrawChar(TILESIZE + 4, MAPHEIGHT / 4 + 5, '|');
+	this->DrawChar(TILESIZE + 5, MAPHEIGHT / 4 + 5, '|');
+}
+
 void Game::PrintScore() {
 
-	//this->DrawChar(TILESIZE + 6, 0,(const char)score + '0');
+	//Write score
+	this->DrawChar(TILESIZE + 0, 0, 'S');
+	this->DrawChar(TILESIZE + 1, 0, 'C');
+	this->DrawChar(TILESIZE + 2, 0, 'O');
+	this->DrawChar(TILESIZE + 3, 0, 'R');
+	this->DrawChar(TILESIZE + 4, 0, 'E');
 
 	//split the score into it's digits
 	int number = this->score;
