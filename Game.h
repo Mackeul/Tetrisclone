@@ -4,8 +4,10 @@
 
 #include "resource.h"
 #include <windows.h>
-#include <iostream>
 #include <math.h>
+#include <iostream>
+#include <string>
+
 
 // To play music
 #include <mmsystem.h>
@@ -76,4 +78,8 @@ private:
 	void DrawChar(int, int, const char);
 	void PrintScore();
 	void PrintPaused();
+
+	void Print(int, int, int);
+	void Print(int, int, std::string);
+
 };
