@@ -62,7 +62,7 @@ void Game::NewGame() {   // Game start?
 	
 	//start out the map
 	for (int x = 0; x < MAPWIDTH; x++) {
-		for (int y = 0; y < MAPHEIGHT; y++) {
+		for (int y = 0; y <= MAPHEIGHT; y++) {
 			if (y == MAPHEIGHT) { //makes Y-collision easier
 				Map[x][y] = Tile::GREY;
 			}
@@ -77,12 +77,9 @@ void Game::NewGame() {   // Game start?
 	sPrePiece.setPosition(MAPWIDTH + PREVIEWAREAWIDTH / 4, PREVIEWAREAWIDTH / 4);
 	this->DrawMap();
 
-	//this->TogglePause();
-
 	sPiece.Create(sPiece);
 	sPiece.setPosition(MAPWIDTH / 2 - 2, -1);
 	this->DrawMap();
-
 	 
 }
 
@@ -316,51 +313,25 @@ void Game::TogglePause() {
 	else {
 		mciSendString(L"resume mp3", NULL, 0, NULL);
 	}
-
 }
 
 void Game::PrintPaused() {
 
 	//display paused info
-
-	//this->DrawChar(TILESIZE + 0, MAPHEIGHT / 4 + 4, 'G');
-	//this->DrawChar(TILESIZE + 1, MAPHEIGHT / 4 + 4, 'A');
-	//this->DrawChar(TILESIZE + 2, MAPHEIGHT / 4 + 4, 'M');
-	//this->DrawChar(TILESIZE + 3, MAPHEIGHT / 4 + 4, 'E');
-	//this->DrawChar(TILESIZE + 5, MAPHEIGHT / 4 + 4, 'P');
-	//this->DrawChar(TILESIZE + 6, MAPHEIGHT / 4 + 4, 'A');
-	//this->DrawChar(TILESIZE + 7, MAPHEIGHT / 4 + 4, 'U');
-	//this->DrawChar(TILESIZE + 8, MAPHEIGHT / 4 + 4, 'S');
-	//this->DrawChar(TILESIZE + 9, MAPHEIGHT / 4 + 4, 'E');
-	//this->DrawChar(TILESIZE + 10, MAPHEIGHT / 4 + 4, 'D');
-
-	this->Print(TILESIZE + 0, MAPHEIGHT / 4 + 4, "GAME PAUSED");
+	this->Print(TILESIZE, MAPHEIGHT / 4 + 4, "GAME PAUSED");
 	this->Print(TILESIZE + 4, MAPHEIGHT / 4 + 5, "||");
 }
 
 void Game::PrintScore() {
 
-	//Write score
-	//this->DrawChar(TILESIZE + 0, 0, 'S');
-	//this->DrawChar(TILESIZE + 1, 0, 'C');
-	//this->DrawChar(TILESIZE + 2, 0, 'O');
-	//this->DrawChar(TILESIZE + 3, 0, 'R');
-	//this->DrawChar(TILESIZE + 4, 0, 'E');
-
 	this->Print(TILESIZE, 0, "SCORE");
 	this->Print(TILESIZE, 0, score);
-
-	//split the score into it's digits
-	//int number = this->score;
-	//int i = 6;
-	//while (i <= 11) {
-	//	int aNum = (int)pow(10, (11 - i));
-	//	this->DrawChar(TILESIZE + i, 0, (number / aNum) % 10 + '0');
-	//	number = number % aNum;
-	//	i++;
-	//}
 }
 
+//Could I use a template for the Print function instead?  
+//Would it be better than these simple overloaded functions?
+
+// Print integers up to 6 digits
 void Game::Print(int x, int y, int number) {
 	int i = 6;
 	while (i <= 11) {
@@ -371,6 +342,7 @@ void Game::Print(int x, int y, int number) {
 	}
 }
 
+//Print strings
 void Game::Print(int x, int y, std::string aString) {
 	for (int i = 0; i < aString.length(); i++) {
 		this->DrawChar(x+i, y, aString[i]);
