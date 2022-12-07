@@ -2,11 +2,6 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/.vs/TetrisClone/FileContentIndex
-/.vs/TetrisClone/v17/ipch/AutoPCH
+/.vs
 /x64/Debug
-/.vs/TetrisClone/v17/Browse.VC.opendb
-/.vs/TetrisClone/v17/Browse.VC.db-wal
-/.vs/TetrisClone/v17/Browse.VC.db-shm
-/.vs/TetrisClone/v17/Browse.VC.db
-/.vs/TetrisClone/v17/.suo
+
