@@ -37,12 +37,14 @@ public:
 	void NewGame();
 	void Tick();
 	void Done();
-	void MoveBlock(int, int);
-	void RotateBlock();
+	void MovePiece(int deltaX, int deltaY);
+	void RotatePiece();
 	void RemoveRow(int);
 
-	void RedrawMap(HWND);
-	bool CollisionTest(int nx, int ny,const Piece&);
+	void PaintMap(HWND);
+
+	bool CollisionTest(const Piece&);
+
 	bool IsPaused();
 	void TogglePause();
 
@@ -60,13 +62,14 @@ private:
 
 	bool GAMEPAUSED = false;
 
-	Piece sPrePiece; // preview piece
-	Piece sPiece; // the 's' prefixes indicate this is a 'structure'
+	Piece m_sPrePiece; // preview piece
+	Piece m_sPiece; // the 's' prefixes indicate this is a 'structure'
 
 	//map for the program
 	BitMapObject bmoMap;
+
 	//block images
-	BitMapObject bmoBlocks;
+	BitMapObject bmoTiles;
 	
 	int Map[MAPWIDTH][MAPHEIGHT + 1]; // the game map
 
@@ -81,5 +84,10 @@ private:
 
 	void Print(int, int, int);
 	void Print(int, int, std::string);
+
+	void SetPieceInMap();
+	void CheckForClearedRow();
+
+	void SetupNewPiece();
 
 };

@@ -125,19 +125,19 @@ LRESULT CALLBACK TheWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
             return(0); //handled message
         }
         else if (wParam == VK_DOWN) { // check for down arrow key
-            theGame->MoveBlock(0, 1);
+            theGame->MovePiece(0, 1);
             return(0); //handled message
         }
         else if (wParam == VK_UP || wParam == VK_SPACE) { // check for up arrow key or space bar for block rotation.
-            theGame->RotateBlock();
+            theGame->RotatePiece();
             return(0); //handled message
         }
         else if (wParam == VK_LEFT) { // check for left arrow key
-            theGame->MoveBlock(-1,0);
+            theGame->MovePiece(-1,0);
             return(0); //handled message
         }
         else if (wParam == VK_RIGHT) { // check for right arrow key
-            theGame->MoveBlock(1,0);
+            theGame->MovePiece(1,0);
             return(0); //handled message
         }
         else if (wParam == VK_PAUSE) {
@@ -157,7 +157,7 @@ LRESULT CALLBACK TheWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
         break;
     case WM_PAINT: { // the window needs repainting
         
-        theGame->RedrawMap(hwnd);
+        theGame->PaintMap(hwnd);
 
         //handled message
         return(0);
