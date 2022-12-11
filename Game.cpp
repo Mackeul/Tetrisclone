@@ -14,14 +14,15 @@ Game* Game::Instance() {
 
 void Game::Tick() {
 
-	if (this->IsPaused())  //do nothing
+	if (IsPaused())  //do nothing
 		return;
 
-	if ((GetTickCount64() - start_time) > (1000 - this->score)) {
-		this->MoveBlock(0, 1);
+	if ((GetTickCount64() - start_time) > (1000 - score)) {
+		MovePiece(0, 1);
 		start_time = GetTickCount64();
 	}
 
+	DrawMap();
 }
 
 void Game::Done() {
@@ -45,8 +46,8 @@ bool Game::Init(HWND hWndMain) {
 	FillRect(bmoMap, &rcTemp, (HBRUSH)GetStockObject(BLACK_BRUSH));
 	ReleaseDC(hWndMain, hdc);
 
-	bmoBlocks.Load(NULL, L"blocks.bmp");
-	this->NewGame();
+	bmoTiles.Load(NULL, L"blocks.bmp");
+	NewGame();
 
 	mciSendString(L"open \"tetris.mp3\" type mpegvideo alias mp3", NULL, 0, NULL);
 	mciSendString(L"play mp3 repeat", NULL, 0, NULL);
@@ -57,8 +58,10 @@ bool Game::Init(HWND hWndMain) {
 
 void Game::NewGame() {   // Game start?
 
-	this->start_time = GetTickCount64();
-	this->score = 0;
+	start_time = GetTickCount64();
+	score = 0;
+
+	std::srand(GetTickCount64());
 	
 	//start out the map
 	for (int x = 0; x < MAPWIDTH; x++) {
@@ -73,14 +76,15 @@ void Game::NewGame() {   // Game start?
 	}
 
 	//Create the preview piece and set position
-	sPrePiece.Create(sPrePiece);
-	sPrePiece.setPosition(MAPWIDTH + PREVIEWAREAWIDTH / 4, PREVIEWAREAWIDTH / 4);
-	this->DrawMap();
+	m_sPrePiece.Create(m_sPrePiece);
+	m_sPrePiece.setPosition(MAPWIDTH + PREVIEWAREAWIDTH / 4, PREVIEWAREAWIDTH / 4);
 
-	sPiece.Create(sPiece);
-	sPiece.setPosition(MAPWIDTH / 2 - 2, -1);
-	this->DrawMap();
-	 
+	Sleep(std::rand() % 1000);
+
+	//Create the start piece
+	m_sPiece.Create(m_sPiece);
+	m_sPiece.setPosition(MAPWIDTH / 2 - 2, -1);
+	
 }
 
 void Game::DrawMap() { //draw the screen
@@ -94,16 +98,16 @@ void Game::DrawMap() { //draw the screen
 		}
 	}
 
-	this->PrintScore();
-	if (this->IsPaused()) {
-		this->PrintPaused();
+	PrintScore();
+	if (IsPaused()) {
+		PrintPaused();
 	}
 	
-	//draw the preview block
+	//draw the preview piece
 	for (xmy = 0; xmy < 4; xmy++) {
 		for (ymx = 0; ymx < 4; ymx++) {
-			if (sPrePiece.size[xmy][ymx] != Tile::NODRAW) {
-				this->DrawTile(sPrePiece.x + xmy, sPrePiece.y + ymx, sPrePiece.size[xmy][ymx]);
+			if (m_sPrePiece.tile[xmy][ymx] != Tile::NODRAW) {
+				DrawTile(m_sPrePiece.x + xmy, m_sPrePiece.y + ymx, m_sPrePiece.tile[xmy][ymx]);
 			}
 		}
 	}
@@ -112,15 +116,15 @@ void Game::DrawMap() { //draw the screen
 	//loop through the positions
 	for (xmy = 0; xmy < MAPWIDTH; xmy++) {
 		for (ymx = 0; ymx < MAPHEIGHT; ymx++) {
-			this->DrawTile(xmy, ymx, Map[xmy][ymx]);
+			DrawTile(xmy, ymx, Map[xmy][ymx]);
 		}
 	}
 
-	//draw the moving block 
+	//draw the moving piece 
 	for (xmy = 0; xmy < 4; xmy++) {
 		for (ymx = 0; ymx < 4; ymx++) {
-			if (sPiece.size[xmy][ymx] != Tile::NODRAW) {
-				this->DrawTile(sPiece.x + xmy, sPiece.y + ymx, sPiece.size[xmy][ymx]);
+			if (m_sPiece.tile[xmy][ymx] != Tile::NODRAW) {
+				DrawTile(m_sPiece.x + xmy, m_sPiece.y + ymx, m_sPiece.tile[xmy][ymx]);
 			}
 		}
 	}
@@ -128,6 +132,7 @@ void Game::DrawMap() { //draw the screen
 }
 
 void Game::RemoveRow(int row) {
+
 	int x, y;
 
 	for (x = 0; x < MAPWIDTH; x++) {
@@ -136,16 +141,15 @@ void Game::RemoveRow(int row) {
 		}
 	}
 
-	this->score += 10;
 }
 
 void Game::DrawTile(int x, int y, int tile) { // put a tile
 
 	//mask first
-	BitBlt(bmoMap, x * TILESIZE, y * TILESIZE, TILESIZE, TILESIZE, bmoBlocks, tile * TILESIZE, TILESIZE, SRCAND);
+	BitBlt(bmoMap, x * TILESIZE, y * TILESIZE, TILESIZE, TILESIZE, bmoTiles, tile * TILESIZE, TILESIZE, SRCAND);
 
 	//then image
-	BitBlt(bmoMap, x * TILESIZE, y * TILESIZE, TILESIZE, TILESIZE, bmoBlocks, tile * TILESIZE, 0, SRCPAINT);
+	BitBlt(bmoMap, x * TILESIZE, y * TILESIZE, TILESIZE, TILESIZE, bmoTiles, tile * TILESIZE, 0, SRCPAINT);
 
 }
 
@@ -158,7 +162,7 @@ void Game::DrawChar(int x, int y, const char letter) { // put a character
 
 	if (isalpha(letter)) {
 		letterTile = (int)letter - 65; // Translate the letter character to position in bitmap  ASCII A=65, pos A= 3rd line in bitmap position 0
-		letterLine = letterTile / 14;  // We put 14 first letters on line 1, the rest on line 2 (after first 2 lines of tiles).
+		letterLine = letterTile / 14;  // We put first 14 letters of alphabet on line 1, the rest on line 2 (after first 2 lines of tiles).
 		letterTile = (letterTile % 14);
 	} else if (isdigit(letter)) {
 		letterTile = (int)letter - 48;  // Digits are on line 3.  ASCII 0=48.
@@ -173,13 +177,13 @@ void Game::DrawChar(int x, int y, const char letter) { // put a character
 	}
 
 	if (letterTile > -1)
-	  BitBlt(bmoMap, x * letterWidth, y * letterHeight, letterWidth, letterHeight, bmoBlocks, letterTile*letterWidth, letterLine * letterHeight +  2 * TILESIZE, SRCAND);
+	  BitBlt(bmoMap, x * letterWidth, y * letterHeight, letterWidth, letterHeight, bmoTiles, letterTile*letterWidth, letterLine * letterHeight +  2 * TILESIZE, SRCAND);
 	
 }
 
-void Game::RedrawMap(HWND hwnd) {
+void Game::PaintMap(HWND hwnd) {
 
-	// a variable needed for painting information
+	// painting information
 	PAINTSTRUCT ps;
 
 	//start painting
@@ -192,89 +196,107 @@ void Game::RedrawMap(HWND hwnd) {
 	EndPaint(hwnd, &ps);
 }
 
-void Game::MoveBlock(int x, int y) {
+void Game::MovePiece(int deltaX, int deltaY) {
 
-	if (this->CollisionTest(x, y, sPiece)) {
-		if (y == 1) {
-			if (sPiece.y < 1) {
-				//you lose!  new game.
-				this->NewGame();
+	Piece tempPiece = m_sPiece;
+
+	tempPiece.Move(deltaX, deltaY);
+
+	if (!CollisionTest(tempPiece)) {
+		m_sPiece = tempPiece;
+	}
+	else {
+		if (deltaY == 1) {
+			// Collision detected while moving piece down, piece can no longer move.
+			if (tempPiece.y < 1) {
+				//Game Over. Start new game.
+				NewGame();
 			}
 			else {
-				bool killblock = false;
-				int i, j;
-
-				//new block time!  add this one to the list!
-				for (i = 0; i < 4; i++) {
-					for (j = 0; j < 4; j++) {
-						if (sPiece.size[i][j] != Tile::NODRAW) {
-							Map[sPiece.x + i][sPiece.y + j] = sPiece.size[i][j];
-						}
-					}
-				}
-				//check for cleared row!
-				for (j = 0; j < MAPHEIGHT; j++) {
-					bool filled = true;
-					for (i = 0; i < MAPWIDTH; i++) {
-						if (Map[i][j] == Tile::BLACK) {
-							filled = false;
-						}
-					}
-					if (filled) {
-						this->RemoveRow(j);
-						killblock = true;
-					}
-				}
-				if (killblock) {
-					for (i = 0; i < 4; i++) {
-						for (j = 0; j < 4; j++) {
-							sPiece.size[i][j] = Tile::NODRAW;
-						}
-					}
-				}
-				sPiece = sPrePiece;
-				sPiece.setPosition(MAPWIDTH / 2 - 2, -1);
-				sPrePiece.Create(sPrePiece);
-				sPrePiece.setPosition(MAPWIDTH + PREVIEWAREAWIDTH / 4, PREVIEWAREAWIDTH / 4);
-
+				SetPieceInMap();
+				CheckForClearedRow();
+				SetupNewPiece();
 			}
 		}
 	}
-	else {
-		sPiece.Move(x, y);
-	}
-	this->DrawMap();
+
 }
 
-void Game::RotateBlock() {
+void Game::SetupNewPiece() {
 
-	Piece tempPiece = sPiece;
+	// Current preview piece becomes the piece in play,
+	// and we create a new preview piece.
 
-	//Rotate sPiece into temp piece
+	m_sPiece = m_sPrePiece;
+	m_sPiece.setPosition(MAPWIDTH / 2 - 2, -1);
+	m_sPrePiece.Create(m_sPrePiece);
+	m_sPrePiece.setPosition(MAPWIDTH + PREVIEWAREAWIDTH / 4, PREVIEWAREAWIDTH / 4);
+}
+
+void Game::CheckForClearedRow() {
+	
+	bool killblock = false;
+	int i, j;
+
+	for (j = 0; j < MAPHEIGHT; j++) {
+		bool filled = true;
+		for (i = 0; i < MAPWIDTH; i++) {
+			if (Map[i][j] == Tile::BLACK) {
+				filled = false;
+			}
+		}
+		if (filled) {
+			RemoveRow(j);
+			score += 10;
+			killblock = true;
+		}
+	}
+	if (killblock) {
+		for (i = 0; i < 4; i++) {
+			for (j = 0; j < 4; j++) {
+				m_sPiece.tile[i][j] = Tile::NODRAW;
+			}
+		}
+	}
+}
+
+void Game::SetPieceInMap() {
+
+	// Once a piece cannot move anymore, 
+	// it becomes part of the map.  This is where we set it in.
+
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			if (m_sPiece.tile[i][j] != Tile::NODRAW) {
+				Map[m_sPiece.x + i][m_sPiece.y + j] = m_sPiece.tile[i][j];
+			}
+		}
+	}
+}
+
+void Game::RotatePiece() {
+
+	Piece tempPiece = m_sPiece;
+
+	//Rotate temp piece
 	tempPiece.Rotate();
 	
 	//Check temp piece for collision
-	if (!this->CollisionTest(0, 0, tempPiece)) {
-		//If no collision assign tempPiece to sPiece to complete the rotation
-		sPiece = tempPiece;
+	if (!CollisionTest(tempPiece)) {
+		//If no collision assign tempPiece to m_sPiece to complete the rotation
+		m_sPiece = tempPiece;
 	}
-	this->DrawMap();
+
 }
 
-bool Game::CollisionTest(int nx, int ny,const Piece& aPiece) {
-
-	int newx = aPiece.x + nx;
-	int newy = aPiece.y + ny;
-
-	int i, j, x, y;
-
+bool Game::CollisionTest(const Piece& aPiece) {
 
 	//Boundary collision
-	for (i = 0; i < 4; i++) {
-		for (j = 0; j < 4; j++) {
-			if (aPiece.size[i][j] != Tile::NODRAW) {
-				if (newx + i < 0 || newx + i > MAPWIDTH - 1
-					|| newy + j < 0 || newy + j > MAPHEIGHT - 1) {
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			if (aPiece.tile[i][j] != Tile::NODRAW) {
+				if (aPiece.x + i < 0 || aPiece.x + i > MAPWIDTH - 1
+					|| aPiece.y + j < 0 || aPiece.y + j > MAPHEIGHT - 1) {
 					return true;
 				}
 			}
@@ -282,12 +304,12 @@ bool Game::CollisionTest(int nx, int ny,const Piece& aPiece) {
 	}
 
 	//Block collision
-	for (x = 0; x < MAPWIDTH; x++) {
-		for (y = 0; y < MAPHEIGHT; y++) {
-			if (x >= newx && x < newx + 4) {
-				if (y >= newy && y < newy + 4) {
+	for (int x = 0; x < MAPWIDTH; x++) {
+		for (int y = 0; y < MAPHEIGHT; y++) {
+			if (x >= aPiece.x && x < aPiece.x + 4) {
+				if (y >= aPiece.y && y < aPiece.y + 4) {
 					if (Map[x][y] != Tile::BLACK) {
-						if (aPiece.size[x - newx][y - newy] != Tile::NODRAW) {
+						if (aPiece.tile[x - aPiece.x][y - aPiece.y] != Tile::NODRAW) {
 							return true;
 						}
 					}
@@ -308,7 +330,7 @@ void Game::TogglePause() {
 	GAMEPAUSED = !GAMEPAUSED;
 	if (GAMEPAUSED) {
 		mciSendString(L"pause mp3", NULL, 0, NULL);
-		this->PrintPaused();
+		PrintPaused();
 	}
 	else {
 		mciSendString(L"resume mp3", NULL, 0, NULL);
@@ -318,25 +340,22 @@ void Game::TogglePause() {
 void Game::PrintPaused() {
 
 	//display paused info
-	this->Print(TILESIZE, MAPHEIGHT / 4 + 4, "GAME PAUSED");
-	this->Print(TILESIZE + 4, MAPHEIGHT / 4 + 5, "||");
+	Print(TILESIZE, MAPHEIGHT / 4 + 4, "GAME PAUSED");
+	Print(TILESIZE + 4, MAPHEIGHT / 4 + 5, "||");
 }
 
 void Game::PrintScore() {
 
-	this->Print(TILESIZE, 0, "SCORE");
-	this->Print(TILESIZE, 0, score);
+	Print(TILESIZE, 0, "SCORE");
+	Print(TILESIZE, 0, score);
 }
-
-//Could I use a template for the Print function instead?  
-//Would it be better than these simple overloaded functions?
 
 // Print integers up to 6 digits
 void Game::Print(int x, int y, int number) {
 	int i = 6;
 	while (i <= 11) {
 		int aNum = (int)pow(10, (11 - i));
-		this->DrawChar(x+i,y, (number / aNum) % 10 + '0');
+		DrawChar(x+i,y, (number / aNum) % 10 + '0');
 		number = number % aNum;
 		i++;
 	}
@@ -345,6 +364,6 @@ void Game::Print(int x, int y, int number) {
 //Print strings
 void Game::Print(int x, int y, std::string aString) {
 	for (int i = 0; i < aString.length(); i++) {
-		this->DrawChar(x+i, y, aString[i]);
+		DrawChar(x+i, y, aString[i]);
 	}
 }

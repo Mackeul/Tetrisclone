@@ -23,7 +23,7 @@ enum Tile : int {
 };
 
 struct Piece {
-    int size[4][4];
+    int tile[4][4];
     int x;
     int y;
 
