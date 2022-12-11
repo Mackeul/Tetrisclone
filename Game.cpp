@@ -56,7 +56,7 @@ bool Game::Init(HWND hWndMain) {
 
 }
 
-void Game::NewGame() {   // Game start?
+void Game::NewGame() {
 
 	start_time = GetTickCount64();
 	score = 0;
@@ -76,13 +76,13 @@ void Game::NewGame() {   // Game start?
 	}
 
 	//Create the preview piece and set position
-	m_sPrePiece.Create(m_sPrePiece);
+	m_sPrePiece.Create(m_sPrePiece, std::rand() % 7);
 	m_sPrePiece.setPosition(MAPWIDTH + PREVIEWAREAWIDTH / 4, PREVIEWAREAWIDTH / 4);
 
 	Sleep(std::rand() % 1000);
 
 	//Create the start piece
-	m_sPiece.Create(m_sPiece);
+	m_sPiece.Create(m_sPiece, std::rand() % 7);
 	m_sPiece.setPosition(MAPWIDTH / 2 - 2, -1);
 	
 }
@@ -229,7 +229,7 @@ void Game::SetupNewPiece() {
 
 	m_sPiece = m_sPrePiece;
 	m_sPiece.setPosition(MAPWIDTH / 2 - 2, -1);
-	m_sPrePiece.Create(m_sPrePiece);
+	m_sPrePiece.Create(m_sPrePiece, std::rand() % 7);
 	m_sPrePiece.setPosition(MAPWIDTH + PREVIEWAREAWIDTH / 4, PREVIEWAREAWIDTH / 4);
 }
 

@@ -9,6 +9,7 @@
 #include "framework.h"
 
 // variables for future bitmap.  We need 9 colors, and 1 for Do Not Draw ... so 10 total.
+// note that these values are used for offsets in the blocks.bmp bitmap.
 enum Tile : int {
     NODRAW = -1,
     BLACK = 0,
@@ -27,11 +28,14 @@ struct Piece {
     int x;
     int y;
 
-    void Create(Piece&);
-    void setPosition(int, int);
-    void Move(int, int);
+    void Create(Piece& aPiece, int blockType);
+    void setPosition(int x, int y);
+    void Move(int deltaX, int deltaY);
     void Rotate();
     void Delete();
+
+	virtual ~Piece();
+	virtual Piece* Make() { return new Piece; }
 
 };
 
