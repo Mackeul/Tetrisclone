@@ -1,6 +1,13 @@
 #include "Piece.h"
+#include "Ishape.h"
+#include "Jshape.h"
+#include "Lshape.h"
+#include "Oshape.h"
+#include "Sshape.h"
+#include "Tshape.h"
+#include "Zshape.h"
 
-void Piece::Create(Piece& aPiece) {
+void Piece::Create(Piece& aPiece, int blockType) {
 
     int i, j;
 
@@ -9,71 +16,50 @@ void Piece::Create(Piece& aPiece) {
   //   X   XX   X  XX   XX  XX   XX  are
   //   X   XX  XXX  XX XX    X   X   block
   //   X                     X   X   types
-    int blockType;
 
-    //initialize the piece to all blank
-    for (i = 0; i < 4; i++) {
-        for (j = 0; j < 4; j++) {
-            aPiece.tile[i][j] = Tile::NODRAW;
-        }
-    }
-
-    blockType = std::rand() % 7;
+	Piece* tmpPiece;
 
     switch (blockType) {
-    case 0: { //Tower
-        aPiece.tile[1][0] = Tile::RED;
-        aPiece.tile[1][1] = Tile::RED;
-        aPiece.tile[1][2] = Tile::RED;
-        aPiece.tile[1][3] = Tile::RED;
-        aPiece.y = 0;
+    case 0: {
+		tmpPiece = new Ishape;
+		aPiece = *tmpPiece;
     }
             break;
-    case 1: { //Box
-        aPiece.tile[1][1] = Tile::BLUE;
-        aPiece.tile[1][2] = Tile::BLUE;
-        aPiece.tile[2][1] = Tile::BLUE;
-        aPiece.tile[2][2] = Tile::BLUE;
+    case 1: { //O
+		tmpPiece = new Oshape;
+		aPiece = *tmpPiece;
     }
             break;
-    case 2: { //Pyramid
-        aPiece.tile[1][1] = Tile::STEEL;
-        aPiece.tile[0][2] = Tile::STEEL;
-        aPiece.tile[1][2] = Tile::STEEL;
-        aPiece.tile[2][2] = Tile::STEEL;
+    case 2: { //T
+		tmpPiece = new Tshape;
+		aPiece = *tmpPiece;
 
     }
             break;
-    case 3: { //Left Leaner
-        aPiece.tile[0][1] = Tile::YELLOW;
-        aPiece.tile[1][1] = Tile::YELLOW;
-        aPiece.tile[1][2] = Tile::YELLOW;
-        aPiece.tile[2][2] = Tile::YELLOW;
+    case 3: { //L or 7
+		tmpPiece = new Lshape;
+		aPiece = *tmpPiece;
     }
             break;
-    case 4: { //Right Leaner
-        aPiece.tile[2][1] = Tile::GREEN;
-        aPiece.tile[1][1] = Tile::GREEN;
-        aPiece.tile[1][2] = Tile::GREEN;
-        aPiece.tile[0][2] = Tile::GREEN;
+    case 4: { //J or r
+		tmpPiece = new Jshape;
+		aPiece = *tmpPiece;
     }
             break;
-    case 5: { // Left Knight
-        aPiece.tile[1][1] = Tile::WHITE;
-        aPiece.tile[2][1] = Tile::WHITE;
-        aPiece.tile[2][2] = Tile::WHITE;
-        aPiece.tile[2][3] = Tile::WHITE;
+    case 5: { // Z
+		tmpPiece = new Zshape;
+		aPiece = *tmpPiece;
     }
             break;
-    case 6: { // Right Knight
-        aPiece.tile[2][1] = Tile::PURPLE;
-        aPiece.tile[1][1] = Tile::PURPLE;
-        aPiece.tile[1][2] = Tile::PURPLE;
-        aPiece.tile[1][3] = Tile::PURPLE;
+    case 6: { // S
+		tmpPiece = new Sshape;
+		aPiece = *tmpPiece;
+    }
+            break;
+    }
 
-    }
-            break;
-    }
+	tmpPiece = nullptr;
+	delete tmpPiece;
 
 }
 
@@ -119,5 +105,9 @@ void Piece::Delete() {
     }
     x = 0;
     y = 0;
+
+}
+
+Piece::~Piece() {
 
 }

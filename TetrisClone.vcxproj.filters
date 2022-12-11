@@ -36,6 +36,27 @@
     <ClInclude Include="Piece.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Ishape.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Oshape.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tshape.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Jshape.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Lshape.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sshape.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Zshape.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TetrisClone.cpp">
