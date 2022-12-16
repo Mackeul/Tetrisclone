@@ -2,10 +2,18 @@
 //
 #include "Game.h"
 #include "TetrisClone.h"
+#include "Log.h"
 
 static Game* theGame = Game::Instance();
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
+
+	//HWND consoleWindow;
+	//AllocConsole();
+	//consoleWindow = FindWindowA("ConsoleWindowClass", NULL);
+	//ShowWindow(consoleWindow, 1);
+
+	Log::Init();
 
     //assign instance to global variable
     hInstMain = hInstance;
@@ -103,7 +111,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     theGame->Done();
 
     //return the wparam from the WM_QUIT message
-    return(msg.wParam);
+    return((int)msg.wParam);
 
 }
 

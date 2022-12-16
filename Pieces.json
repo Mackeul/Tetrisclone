@@ -1,0 +1,81 @@
+{
+  "pieces": [
+    {
+      "name":"Ishape",
+      "id": 0,
+      "colorIndex": 3,
+      "shape": [
+        [ 1, 0 ],
+        [ 1, 1 ],
+        [ 1, 2 ],
+        [ 1, 3 ]
+      ]
+    },
+    {
+      "name": "Oshape",
+      "id": 1,
+      "colorIndex": 2,
+      "shape": [
+        [ 1, 1 ],
+        [ 1, 2 ],
+        [ 2, 1 ],
+        [ 2, 2 ]
+      ]
+    },
+    {
+      "name": "Tshape",
+      "id": 2,
+      "colorIndex": 7,
+      "shape": [
+        [ 1, 1 ],
+        [ 0, 2 ],
+        [ 1, 2 ],
+        [ 2, 2 ]
+      ]
+    },
+    {
+      "name": "Lshape",
+      "id": 3,
+      "colorIndex": 6,
+      "shape": [
+        [ 1, 1 ],
+        [ 2, 1 ],
+        [ 2, 2 ],
+        [ 2, 3 ]
+      ]
+    },
+    {
+      "name": "Jshape",
+      "id": 4,
+      "colorIndex": 8,
+      "shape": [
+        [ 2, 1 ],
+        [ 1, 1 ],
+        [ 1, 2 ],
+        [ 1, 3 ]
+      ]
+    },
+    {
+      "name": "Zshape",
+      "id": 5,
+      "colorIndex": 5,
+      "shape": [
+        [ 0, 1 ],
+        [ 1, 1 ],
+        [ 1, 2 ],
+        [ 2, 2 ]
+      ]
+    },
+    {
+      "name": "Sshape",
+      "id": 6,
+      "colorIndex": 4,
+      "shape": [
+        [ 2, 1 ],
+        [ 1, 1 ],
+        [ 1, 2 ],
+        [ 0, 2 ]
+      ]
+    }
+  ]
+}

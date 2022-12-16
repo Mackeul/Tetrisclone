@@ -47,10 +47,15 @@ bool Game::Init(HWND hWndMain) {
 	ReleaseDC(hWndMain, hdc);
 
 	bmoTiles.Load(NULL, L"blocks.bmp");
+
+	Piece::Load("Pieces.json");
+
 	NewGame();
 
 	mciSendString(L"open \"tetris.mp3\" type mpegvideo alias mp3", NULL, 0, NULL);
 	mciSendString(L"play mp3 repeat", NULL, 0, NULL);
+
+
 
 	return(true); //return success
 
@@ -79,6 +84,10 @@ void Game::NewGame() {
 	m_sPrePiece.Create(m_sPrePiece, std::rand() % 7);
 	m_sPrePiece.setPosition(MAPWIDTH + PREVIEWAREAWIDTH / 4, PREVIEWAREAWIDTH / 4);
 
+	// Creating both pieces one right after the other here at the beginning
+	// doesn't usually give enough time for the rand function to give
+	// us a new number (ie. new piece), so sleeping a random amount of milliseconds,
+	// up to one second max, to account for this.I
 	Sleep(std::rand() % 1000);
 
 	//Create the start piece

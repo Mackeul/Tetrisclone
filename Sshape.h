@@ -13,9 +13,9 @@ public:
 			}
 		}
 
-		tile[2][1] = Tile::PURPLE;
-		tile[1][1] = Tile::PURPLE;
-		tile[1][2] = Tile::PURPLE;
-		tile[1][3] = Tile::PURPLE;
+		tile[2][1] = Tile::GREEN;
+		tile[1][1] = Tile::GREEN;
+		tile[1][2] = Tile::GREEN;
+		tile[0][2] = Tile::GREEN;
 	}
 };

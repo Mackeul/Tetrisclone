@@ -13,10 +13,10 @@ public:
 			}
 		}
 
-		tile[1][1] = Tile::WHITE;
-		tile[2][1] = Tile::WHITE;
-		tile[2][2] = Tile::WHITE;
-		tile[2][3] = Tile::WHITE;
+		tile[0][1] = Tile::YELLOW;
+		tile[1][1] = Tile::YELLOW;
+		tile[1][2] = Tile::YELLOW;
+		tile[2][2] = Tile::YELLOW;
 
 	}
 };

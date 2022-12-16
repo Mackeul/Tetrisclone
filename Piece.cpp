@@ -1,3 +1,10 @@
+#include <iostream>
+#include <fstream>
+#include <sstream>
+
+#include "nlohmann/json.hpp"
+#include "Log.h"
+
 #include "Piece.h"
 #include "Ishape.h"
 #include "Jshape.h"
@@ -7,16 +14,29 @@
 #include "Tshape.h"
 #include "Zshape.h"
 
-void Piece::Create(Piece& aPiece, int blockType) {
+static std::vector<Piece> all_pieces;
 
-    int i, j;
+void Piece::Create(Piece& aPiece, int blockType) {
 
   //   0    1   2   3   4    5   6    
   //   X                             These
   //   X   XX   X  XX   XX  XX   XX  are
   //   X   XX  XXX  XX XX    X   X   block
   //   X                     X   X   types
+	LOG_INFO("Create Piece...\n");
+	LOG_INFO(all_pieces.size());
 
+	for (auto it = all_pieces.begin(); it < all_pieces.end(); it++) {
+		LOG_INFO(it->id);
+		if (it->id == blockType) {
+			std::stringstream logString;
+			logString << "Found piece with id: " << it->id << " block name is:" << it->name << std::endl;
+			LOG_INFO(logString.str());
+			aPiece = *it;
+			break;
+		}
+	}
+	/*
 	Piece* tmpPiece;
 
     switch (blockType) {
@@ -60,6 +80,8 @@ void Piece::Create(Piece& aPiece, int blockType) {
 
 	tmpPiece = nullptr;
 	delete tmpPiece;
+
+	*/
 
 }
 
@@ -109,5 +131,50 @@ void Piece::Delete() {
 }
 
 Piece::~Piece() {
+
+}
+
+bool Piece::Load(const std::string& fileName) {
+
+	{   // Parse the JSON and create the pieces.
+		using namespace nlohmann;
+
+		ordered_json j;
+
+		try {
+			std::ifstream i(fileName);
+			j = ordered_json::parse(i);
+		}
+		catch (ordered_json::parse_error& ex) {
+			std::stringstream logString;
+			logString << "parse error at byte " << ex.byte << std::endl;
+			LOG_ERROR(logString.str());
+		}
+
+		auto pieces = j.at("pieces");
+
+		int n = 0;
+		for (auto it = pieces.begin(); it < pieces.end(); it++) {
+			Piece tmpPiece;
+
+			//initialize the piece to all blank
+			for (int i = 0; i < 4; i++) {
+				for (int j = 0; j < 4; j++) {
+					tmpPiece.tile[i][j] = Tile::NODRAW;
+				}
+			}
+			tmpPiece.id = it->at("id");
+			tmpPiece.name = it->at("name");
+			tmpPiece.tile[it->at("shape")[0][0]][it->at("shape")[0][1]] = it->at("colorIndex");
+			tmpPiece.tile[it->at("shape")[1][0]][it->at("shape")[1][1]] = it->at("colorIndex");
+			tmpPiece.tile[it->at("shape")[2][0]][it->at("shape")[2][1]] = it->at("colorIndex");
+			tmpPiece.tile[it->at("shape")[3][0]][it->at("shape")[3][1]] = it->at("colorIndex");
+
+			all_pieces.push_back(tmpPiece);
+		}
+
+	}
+
+	return true;
 
 }
