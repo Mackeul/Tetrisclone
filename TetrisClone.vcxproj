@@ -154,20 +154,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BitmapObject.h" />
-    <ClInclude Include="Jshape.h" />
     <ClInclude Include="Log.h" />
-    <ClInclude Include="Lshape.h" />
-    <ClInclude Include="Oshape.h" />
     <ClInclude Include="Piece.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="Sshape.h" />
-    <ClInclude Include="Tshape.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TetrisClone.h" />
-    <ClInclude Include="Ishape.h" />
-    <ClInclude Include="Zshape.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BitmapObject.cpp" />
