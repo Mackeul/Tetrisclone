@@ -16,7 +16,7 @@ void Game::Tick() {
 	if (IsPaused())  //do nothing
 		return;
 
-	if ((GetTickCount64() - start_time) > (1000 - score)) {
+	if ((GetTickCount64() - start_time) > (1000 - m_ScoreManager.getScore())) {
 		MovePiece(0, 1);
 		start_time = GetTickCount64();
 	}
@@ -25,9 +25,13 @@ void Game::Tick() {
 }
 
 void Game::Done() {
+
 	//clean up code goes here
 	mciSendString(L"stop mp3", NULL, 0, NULL);
 	mciSendString(L"close mp3", NULL, 0, NULL);
+
+	removeObserver(&m_ScoreManager);
+
 }
 
 bool Game::Init(HWND hWndMain) {
@@ -49,6 +53,8 @@ bool Game::Init(HWND hWndMain) {
 
 	Piece::Load("Pieces.json");
 
+	addObserver(&m_ScoreManager);
+
 	NewGame();
 
 	mciSendString(L"open \"tetris.mp3\" type mpegvideo alias mp3", NULL, 0, NULL);
@@ -61,7 +67,8 @@ bool Game::Init(HWND hWndMain) {
 void Game::NewGame() {
 
 	start_time = GetTickCount64();
-	score = 0;
+	
+	m_ScoreManager.resetScore();
 
 	std::srand(GetTickCount64());
 	
@@ -105,6 +112,7 @@ void Game::DrawMap() { //draw the screen
 	}
 
 	PrintScore();
+	
 	if (IsPaused()) {
 		PrintPaused();
 	}
@@ -253,7 +261,7 @@ void Game::CheckForClearedRow() {
 		}
 		if (filled) {
 			RemoveRow(j);
-			score += 10;
+			notify(Event::ROW_CLEARED);
 			killblock = true;
 		}
 	}
@@ -350,18 +358,12 @@ void Game::PrintPaused() {
 	Print(TILESIZE + 4, MAPHEIGHT / 4 + 5, "||");
 }
 
-void Game::PrintScore() {
-
-	Print(TILESIZE, 0, "SCORE");
-	Print(TILESIZE, 0, score);
-}
-
 // Print integers up to 6 digits
 void Game::Print(int x, int y, int number) {
 	int i = 6;
 	while (i <= 11) {
 		int aNum = (int)pow(10, (11 - i));
-		DrawChar(x+i,y, (number / aNum) % 10 + '0');
+		DrawChar(x + i, y, (number / aNum) % 10 + '0');
 		number = number % aNum;
 		i++;
 	}
@@ -370,6 +372,12 @@ void Game::Print(int x, int y, int number) {
 //Print strings
 void Game::Print(int x, int y, std::string aString) {
 	for (int i = 0; i < aString.length(); i++) {
-		DrawChar(x+i, y, aString[i]);
+		DrawChar(x + i, y, aString[i]);
 	}
+}
+
+void Game::PrintScore() {
+
+	Print(TILESIZE, 0, "SCORE");
+	Print(TILESIZE, 0, m_ScoreManager.getScore());
 }

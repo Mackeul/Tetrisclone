@@ -17,6 +17,8 @@
 #include "bitmapobject.h"
 #include "framework.h"
 #include "Piece.h"
+#include "Subject.h"
+#include "ScoreManager.h"
 
 // since we're using square blocks, let's onlyuse a single size.
 const int TILESIZE = 16;
@@ -26,7 +28,7 @@ const int MAPWIDTH = 10;
 const int MAPHEIGHT = 30;
 const int PREVIEWAREAWIDTH = 8;
 
-class Game {
+class Game : public Subject {
 
 public:
 
@@ -48,7 +50,6 @@ public:
 	bool IsPaused();
 	void TogglePause();
 
-
 protected:
 
 
@@ -58,7 +59,9 @@ private:
 
 	ULONGLONG start_time;
 
-	int score = 0;
+	//int score = 0;
+
+	ScoreManager m_ScoreManager;
 
 	bool GAMEPAUSED = false;
 
@@ -79,11 +82,12 @@ private:
 
 	void DrawTile(int, int, int);
 	void DrawChar(int, int, const char);
-	void PrintScore();
+	
 	void PrintPaused();
 
 	void Print(int, int, int);
 	void Print(int, int, std::string);
+	void PrintScore();
 
 	void SetPieceInMap();
 	void CheckForClearedRow();
