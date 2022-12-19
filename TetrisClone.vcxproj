@@ -119,11 +119,16 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -134,6 +139,7 @@
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -141,25 +147,24 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BitmapObject.h" />
-    <ClInclude Include="Jshape.h" />
-    <ClInclude Include="Lshape.h" />
-    <ClInclude Include="Oshape.h" />
+    <ClInclude Include="Log.h" />
     <ClInclude Include="Piece.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="Sshape.h" />
-    <ClInclude Include="Tshape.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TetrisClone.h" />
-    <ClInclude Include="Ishape.h" />
-    <ClInclude Include="Zshape.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BitmapObject.cpp" />
+    <ClCompile Include="Log.cpp" />
     <ClCompile Include="Piece.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="TetrisClone.cpp" />
@@ -168,8 +173,19 @@
     <ResourceCompile Include="TetrisClone.rc" />
   </ItemGroup>
   <ItemGroup>
+    <CopyFileToFolders Include="blocks.bmp" />
     <Image Include="small.ico" />
     <Image Include="TetrisClone.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="Pieces.json">
+      <FileType>Document</FileType>
+    </CopyFileToFolders>
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="tetris.mp3">
+      <FileType>Document</FileType>
+    </CopyFileToFolders>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

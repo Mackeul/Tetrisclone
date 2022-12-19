@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include "resource.h"
 
 // tell the compiler to not include many unneeded header files
@@ -24,9 +25,12 @@ enum Tile : int {
 };
 
 struct Piece {
+
     int tile[4][4];
     int x;
     int y;
+	int id;
+	std::string name;
 
     void Create(Piece& aPiece, int blockType);
     void setPosition(int x, int y);
@@ -36,6 +40,9 @@ struct Piece {
 
 	virtual ~Piece();
 	virtual Piece* Make() { return new Piece; }
+
+	static bool Load(const std::string& fileName);
+	static int NumPieces();
 
 };
 

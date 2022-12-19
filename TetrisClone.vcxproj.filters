@@ -36,25 +36,7 @@
     <ClInclude Include="Piece.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Ishape.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Oshape.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Tshape.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Jshape.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Lshape.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sshape.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Zshape.h">
+    <ClInclude Include="Log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -71,6 +53,9 @@
     <ClCompile Include="Piece.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Log.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TetrisClone.rc">
@@ -84,5 +69,16 @@
     <Image Include="TetrisClone.ico">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="blocks.bmp">
+      <Filter>Resource Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="Pieces.json">
+      <Filter>Resource Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="tetris.mp3">
+      <Filter>Resource Files</Filter>
+    </CopyFileToFolders>
   </ItemGroup>
 </Project>
