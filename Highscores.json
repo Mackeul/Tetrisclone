@@ -1,0 +1,16 @@
+{
+	"highscores": [
+		{ "time": "01/01/2001 00:00:01",
+		  "name": "MADMIKE",
+		  "score": 100
+		},
+		{ "time": "01/01/2001 13:00:01",
+		  "name": "CRAZYJO",
+		  "score": 90
+		},
+		{ "time": "01/01/2000 13:45:01",
+		  "name": "GOOFYGAB",
+		  "score": 70
+		}
+	]								
+}

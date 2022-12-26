@@ -14,11 +14,11 @@
 #include <mciapi.h>
 #pragma comment(lib, "Winmm.lib")
 
-#include "bitmapobject.h"
 #include "framework.h"
 #include "Piece.h"
 #include "Subject.h"
 #include "ScoreManager.h"
+#include "DisplayManager.h"
 
 // since we're using square blocks, let's onlyuse a single size.
 const int TILESIZE = 16;
@@ -63,30 +63,21 @@ private:
 
 	ScoreManager m_ScoreManager;
 
+	DisplayManager m_DisplayManager;
+
 	bool GAMEPAUSED = false;
 
 	Piece m_sPrePiece; // preview piece
 	Piece m_sPiece; // the 's' prefixes indicate this is a 'structure'
-
-	//map for the program
-	BitMapObject bmoMap;
-
-	//block images
-	BitMapObject bmoTiles;
 	
 	int Map[MAPWIDTH][MAPHEIGHT + 1]; // the game map
 
 	Game() {};
 
 	void DrawMap();
-
-	void DrawTile(int, int, int);
-	void DrawChar(int, int, const char);
 	
 	void PrintPaused();
 
-	void Print(int, int, int);
-	void Print(int, int, std::string);
 	void PrintScore();
 
 	void SetPieceInMap();

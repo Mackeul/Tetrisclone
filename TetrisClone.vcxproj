@@ -154,6 +154,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BitmapObject.h" />
+    <ClInclude Include="DisplayManager.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="Observer.h" />
@@ -168,6 +169,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BitmapObject.cpp" />
+    <ClCompile Include="DisplayManager.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="Piece.cpp" />
     <ClCompile Include="Game.cpp" />
