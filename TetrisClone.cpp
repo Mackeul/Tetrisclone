@@ -120,7 +120,7 @@ LRESULT CALLBACK TheWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
     //which message did we get?
 
     if (theGame->IsPaused()) {
-        if (uMsg == WM_KEYDOWN && wParam == VK_PAUSE) {
+        if (uMsg == WM_KEYDOWN && (wParam == VK_PAUSE || wParam == VK_F1)) {
             theGame->TogglePause();
             return(0);
         }
@@ -152,6 +152,9 @@ LRESULT CALLBACK TheWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
             theGame->TogglePause();
             return(0);
         }
+		else if (wParam == VK_F1) {
+			theGame->ToggleHighScores();
+		}
     }
         break;
     case WM_DESTROY: {  //window is being destroyed.

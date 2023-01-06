@@ -44,7 +44,7 @@ bool Game::Init(HWND hWndMain) {
 	// Load the pieces info from file.
 	Piece::Load("Pieces.json");
 
-	//m_ScoreManager.loadHighScores();
+	m_ScoreManager.loadHighScores();
 
 	NewGame();
 
@@ -212,6 +212,12 @@ void Game::TogglePause() {
 	else {
 		mciSendString(L"resume mp3", NULL, 0, NULL);
 	}
+}
+
+void Game::ToggleHighScores() {
+	TogglePause();
+	m_ScoreManager.showHighScores(&m_DisplayManager, MAPWIDTH, MAPHEIGHT);
+
 }
 
 void Game::PrintPaused() {

@@ -15,17 +15,17 @@ public:
 	int getScore();
 	void resetScore();
 	void loadHighScores();
-	void showHighScores(DisplayManager* dm);
+	void showHighScores(DisplayManager* dm, int mapwidth, int mapheight);
 	void writeHighScores();
 
 private:
 
 	int m_Score;
 
-	struct HighScore {
-		std::string time;
-		std::string name;
+	struct HighScore {		
 		int score;
+		std::string name;
+		std::string time;
 	};
 
 	std::vector<HighScore> HighScores;

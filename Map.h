@@ -23,6 +23,9 @@ public:
 	void RemoveRow(int row);
 	void CheckForClearedRow(Piece* piece);
 
+	int GetWidth() { return MAPWIDTH; }
+	int GetHeight() { return MAPHEIGHT; }
+
 	int tile[MAPWIDTH][MAPHEIGHT];
 
 };

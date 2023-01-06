@@ -13,7 +13,7 @@ DisplayManager::~DisplayManager() {
 
 bool DisplayManager::Init(HWND hWndMain) {
 
-	//set the client area size
+	//set the client area sizegit l
 	RECT rcTemp;
 
 	SetRect(&rcTemp, 0, 0, (MAPWIDTH + PREVIEWAREAWIDTH) * TILESIZE, MAPHEIGHT * TILESIZE); // 160x480 client area
@@ -71,7 +71,7 @@ void DisplayManager::DrawChar(int x, int y, const char letter) { // put a charac
 
 }
 
-// Print integers up to 6 digits
+// Print integers up to 6 digits with leading zeroes
 void DisplayManager::Print(int x, int y, int number) {
 	int i = 6;
 	while (i <= 11) {

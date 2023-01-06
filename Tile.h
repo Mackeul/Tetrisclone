@@ -14,3 +14,6 @@ enum Tile : int {
 	STEEL = 7,
 	PURPLE = 8
 };
+
+// size of square blocks
+const int TILESIZE = 16;

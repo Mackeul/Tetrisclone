@@ -2,6 +2,7 @@
 #include <string>
 
 #include "bitmapobject.h"
+#include "Tile.h"
 
 class DisplayManager
 {
@@ -25,9 +26,6 @@ private:
 
 	//block images
 	BitMapObject bmoTiles;
-
-	// size of square blocks
-	const int TILESIZE = 16;
 
 	// now for the map...
 	const int MAPWIDTH = 10;

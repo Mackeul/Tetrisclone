@@ -23,7 +23,7 @@
 #include "DisplayManager.h"
 #include "Tile.h"
 
-const int TILESIZE = 16;
+//const int TILESIZE = 16;
 
 const int MAPWIDTH = 10;
 const int MAPHEIGHT = 30;
@@ -49,6 +49,7 @@ public:
 
 	bool IsPaused();
 	void TogglePause();
+	void ToggleHighScores();
 
 protected:
 
