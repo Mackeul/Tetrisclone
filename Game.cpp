@@ -1,5 +1,3 @@
-#include <string>
-
 #include "Game.h"
 
 Game* Game::gameInstance = 0;
@@ -22,7 +20,7 @@ void Game::Tick() {
 		start_time = GetTickCount64();
 	}
 
-	DrawMap();
+	Draw();
 }
 
 void Game::Done() {
@@ -31,7 +29,7 @@ void Game::Done() {
 	mciSendString(L"stop mp3", NULL, 0, NULL);
 	mciSendString(L"close mp3", NULL, 0, NULL);
 
-	removeObserver(&m_ScoreManager);
+	m_Map.removeObserver(&m_ScoreManager);
 
 }
 
@@ -41,7 +39,7 @@ bool Game::Init(HWND hWndMain) {
 		return false;
 	}
 
-	addObserver(&m_ScoreManager);
+	m_Map.addObserver(&m_ScoreManager);
 
 	// Load the pieces info from file.
 	Piece::Load("Pieces.json");
@@ -63,19 +61,9 @@ void Game::NewGame() {
 	
 	m_ScoreManager.resetScore();
 
-	std::srand(GetTickCount64());
-	
-	//start out the map
-	for (int x = 0; x < MAPWIDTH; x++) {
-		for (int y = 0; y <= MAPHEIGHT; y++) {
-			if (y == MAPHEIGHT) { //makes Y-collision easier
-				Map[x][y] = Tile::GREY;
-			}
-			else {
-				Map[x][y] = Tile::BLACK;
-			}
-		}
-	}
+	std::srand(GetTickCount());
+
+	m_Map.Setup();
 
 	//Create the preview piece and set position
 	int randomPiece = std::rand() % Piece::NumPieces();
@@ -93,7 +81,7 @@ void Game::NewGame() {
 	
 }
 
-void Game::DrawMap() { //draw the screen
+void Game::Draw() { //draw the screen
 
 	int xmy = 0, ymx = 0;
 
@@ -111,48 +99,18 @@ void Game::DrawMap() { //draw the screen
 	}
 	
 	//draw the preview piece
-	for (xmy = 0; xmy < 4; xmy++) {
-		for (ymx = 0; ymx < 4; ymx++) {
-			if (m_sPrePiece.tile[xmy][ymx] != Tile::NODRAW) {
-				m_DisplayManager.DrawTile(m_sPrePiece.x + xmy, m_sPrePiece.y + ymx, m_sPrePiece.tile[xmy][ymx]);
-			}
-		}
-	}
+	m_sPrePiece.Draw(&m_DisplayManager);
 
-	//draw the map
-	//loop through the positions
-	for (xmy = 0; xmy < MAPWIDTH; xmy++) {
-		for (ymx = 0; ymx < MAPHEIGHT; ymx++) {
-			m_DisplayManager.DrawTile(xmy, ymx, Map[xmy][ymx]);
-		}
-	}
+	m_Map.Draw(&m_DisplayManager);
 
 	//draw the moving piece 
-	for (xmy = 0; xmy < 4; xmy++) {
-		for (ymx = 0; ymx < 4; ymx++) {
-			if (m_sPiece.tile[xmy][ymx] != Tile::NODRAW) {
-				m_DisplayManager.DrawTile(m_sPiece.x + xmy, m_sPiece.y + ymx, m_sPiece.tile[xmy][ymx]);
-			}
-		}
-	}
+	m_sPiece.Draw(&m_DisplayManager);
 
 }
 
-void Game::RemoveRow(int row) {
+void Game::Paint(HWND hwnd) {
 
-	int x, y;
-
-	for (x = 0; x < MAPWIDTH; x++) {
-		for (y = row; y > 0; y--) {
-			Map[x][y] = Map[x][y - 1];
-		}
-	}
-
-}
-
-void Game::PaintMap(HWND hwnd) {
-
-	m_DisplayManager.PaintMap(hwnd);
+	m_DisplayManager.Paint(hwnd);
 }
 
 void Game::MovePiece(int deltaX, int deltaY) {
@@ -172,8 +130,8 @@ void Game::MovePiece(int deltaX, int deltaY) {
 				NewGame();
 			}
 			else {
-				SetPieceInMap();
-				CheckForClearedRow();
+				m_Map.IngestPiece(&m_sPiece);
+				m_Map.CheckForClearedRow(&m_sPiece);
 				SetupNewPiece();
 			}
 		}
@@ -187,51 +145,11 @@ void Game::SetupNewPiece() {
 	// and we create a new preview piece.
 
 	m_sPiece = m_sPrePiece;
-	m_sPiece.setPosition(MAPWIDTH / 2 - 2, -1);
+	m_sPiece.setPosition(MAPWIDTH / 2 - 2, -1);  // Replace with m_Map.getCenterX() ?
 	m_sPrePiece.Create(m_sPrePiece, std::rand() % 7);
 	m_sPrePiece.setPosition(MAPWIDTH + PREVIEWAREAWIDTH / 4, PREVIEWAREAWIDTH / 4);
 }
 
-void Game::CheckForClearedRow() {
-	
-	bool killblock = false;
-	int i, j;
-
-	for (j = 0; j < MAPHEIGHT; j++) {
-		bool filled = true;
-		for (i = 0; i < MAPWIDTH; i++) {
-			if (Map[i][j] == Tile::BLACK) {
-				filled = false;
-			}
-		}
-		if (filled) {
-			RemoveRow(j);
-			notify(Event::ROW_CLEARED);
-			killblock = true;
-		}
-	}
-	if (killblock) {
-		for (i = 0; i < 4; i++) {
-			for (j = 0; j < 4; j++) {
-				m_sPiece.tile[i][j] = Tile::NODRAW;
-			}
-		}
-	}
-}
-
-void Game::SetPieceInMap() {
-
-	// Once a piece cannot move anymore, 
-	// it becomes part of the map.  This is where we set it in.
-
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 4; j++) {
-			if (m_sPiece.tile[i][j] != Tile::NODRAW) {
-				Map[m_sPiece.x + i][m_sPiece.y + j] = m_sPiece.tile[i][j];
-			}
-		}
-	}
-}
 
 void Game::RotatePiece() {
 
@@ -267,7 +185,7 @@ bool Game::CollisionTest(const Piece& aPiece) {
 		for (int y = 0; y < MAPHEIGHT; y++) {
 			if (x >= aPiece.x && x < aPiece.x + 4) {
 				if (y >= aPiece.y && y < aPiece.y + 4) {
-					if (Map[x][y] != Tile::BLACK) {
+					if (m_Map.tile[x][y] != Tile::BLACK) {
 						if (aPiece.tile[x - aPiece.x][y - aPiece.y] != Tile::NODRAW) {
 							return true;
 						}

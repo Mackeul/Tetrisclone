@@ -89,7 +89,7 @@ void DisplayManager::Print(int x, int y, std::string aString) {
 	}
 }
 
-void DisplayManager::PaintMap(HWND hwnd) {
+void DisplayManager::Paint(HWND hwnd) {
 
 	// painting information
 	PAINTSTRUCT ps;

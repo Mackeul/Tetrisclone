@@ -121,5 +121,16 @@ bool Piece::Load(const std::string& fileName) {  //Load pieces information from 
 
 int Piece::NumPieces() {
 
-	return all_pieces.size();
+	return (int)all_pieces.size();
+}
+
+void Piece::Draw(DisplayManager* dm) {
+
+	for (int xmy = 0; xmy < 4; xmy++) {
+		for (int ymx = 0; ymx < 4; ymx++) {
+			if (tile[xmy][ymx] != Tile::NODRAW) {
+				dm->DrawTile(x + xmy, y + ymx, tile[xmy][ymx]);
+			}
+		}
+	}
 }

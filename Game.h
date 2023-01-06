@@ -2,7 +2,6 @@
 // tell the compiler to not include many unneeded header files
 #define WIN32_LEAN_AND_MEAN
 
-#include "resource.h"
 #include <windows.h>
 #include <math.h>
 #include <iostream>
@@ -14,16 +13,18 @@
 #include <mciapi.h>
 #pragma comment(lib, "Winmm.lib")
 
+#include "resource.h"
 #include "framework.h"
+
 #include "Piece.h"
+#include "Map.h"
 #include "Subject.h"
 #include "ScoreManager.h"
 #include "DisplayManager.h"
+#include "Tile.h"
 
-// since we're using square blocks, let's onlyuse a single size.
 const int TILESIZE = 16;
 
-// now for the map...
 const int MAPWIDTH = 10;
 const int MAPHEIGHT = 30;
 const int PREVIEWAREAWIDTH = 8;
@@ -41,9 +42,8 @@ public:
 	void Done();
 	void MovePiece(int deltaX, int deltaY);
 	void RotatePiece();
-	void RemoveRow(int);
 
-	void PaintMap(HWND);
+	void Paint(HWND);
 
 	bool CollisionTest(const Piece&);
 
@@ -70,18 +70,17 @@ private:
 	Piece m_sPrePiece; // preview piece
 	Piece m_sPiece; // the 's' prefixes indicate this is a 'structure'
 	
-	int Map[MAPWIDTH][MAPHEIGHT + 1]; // the game map
+	//int Map[MAPWIDTH][MAPHEIGHT + 1]; // the game map
+
+	Map m_Map;
 
 	Game() {};
 
-	void DrawMap();
+	void Draw();
 	
 	void PrintPaused();
 
 	void PrintScore();
-
-	void SetPieceInMap();
-	void CheckForClearedRow();
 
 	void SetupNewPiece();
 

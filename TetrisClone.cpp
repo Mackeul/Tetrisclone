@@ -165,7 +165,7 @@ LRESULT CALLBACK TheWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
         break;
     case WM_PAINT: { // the window needs repainting
         
-        theGame->PaintMap(hwnd);
+        theGame->Paint(hwnd);
 
         //handled message
         return(0);

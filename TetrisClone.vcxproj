@@ -157,6 +157,7 @@
     <ClInclude Include="DisplayManager.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="Log.h" />
+    <ClInclude Include="Map.h" />
     <ClInclude Include="Observer.h" />
     <ClInclude Include="Piece.h" />
     <ClInclude Include="framework.h" />
@@ -166,11 +167,13 @@
     <ClInclude Include="Subject.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TetrisClone.h" />
+    <ClInclude Include="Tile.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BitmapObject.cpp" />
     <ClCompile Include="DisplayManager.cpp" />
     <ClCompile Include="Log.cpp" />
+    <ClCompile Include="Map.cpp" />
     <ClCompile Include="Piece.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="ScoreManager.cpp" />

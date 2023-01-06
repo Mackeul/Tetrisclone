@@ -13,13 +13,11 @@ public:
 
 	bool Init(HWND);
 
-	void DrawTile(int, int, int);
-	void DrawChar(int, int, const char);
-
 	void Print(int, int, int);
 	void Print(int, int, std::string);
+	void DrawTile(int, int, int);
 
-	void PaintMap(HWND hwnd);
+	void Paint(HWND hwnd);
 
 private:
 	//map for the program
@@ -35,5 +33,7 @@ private:
 	const int MAPWIDTH = 10;
 	const int MAPHEIGHT = 30;
 	const int PREVIEWAREAWIDTH = 8;
+
+	void DrawChar(int, int, const char);
 };
 
