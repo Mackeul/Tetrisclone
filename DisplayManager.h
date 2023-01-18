@@ -14,8 +14,12 @@ public:
 
 	bool Init(HWND);
 
-	void Print(int, int, int);
-	void Print(int, int, std::string);
+	void Print(int x, int y, int number);
+	void Print(int x, int y, std::string aString);
+
+	template<typename T>
+	void TPrint(int x, int y, T aValue);
+
 	void DrawTile(int, int, int);
 
 	void Paint(HWND hwnd);

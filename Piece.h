@@ -20,6 +20,8 @@ struct Piece {
 	std::string name;
 
     void Create(Piece& aPiece, int blockType);
+	void Create(Piece& aPiece, std::string blockName);
+
     void setPosition(int x, int y);
     void Move(int deltaX, int deltaY);
     void Rotate();

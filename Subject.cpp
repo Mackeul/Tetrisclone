@@ -4,9 +4,9 @@
 #include "Log.h"
 
 void Subject::notify(Event event) {
-	for (auto it = m_Observers.begin(); it < m_Observers.end(); ++it) {
-		//De-refecence it first, then we get access to the onNotify() method
-		(*it)->onNotify(event);
+
+	for (Observer* observer : m_Observers) {
+		observer->onNotify(event);
 	}
 }
 

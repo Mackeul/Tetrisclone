@@ -101,7 +101,7 @@ void Game::Draw() { //draw the screen
 	//draw the preview piece
 	m_sPrePiece.Draw(&m_DisplayManager);
 
-	m_Map.Draw(&m_DisplayManager);
+	m_Map.Draw();
 
 	//draw the moving piece 
 	m_sPiece.Draw(&m_DisplayManager);
@@ -126,7 +126,11 @@ void Game::MovePiece(int deltaX, int deltaY) {
 		if (deltaY == 1) {
 			// Collision detected while moving piece down, piece can no longer move.
 			if (tempPiece.y < 1) {
-				//Game Over. Start new game.
+				if (m_ScoreManager.checkForHighscore()) {
+					m_ScoreManager.getPlayerName();
+				}
+				m_ScoreManager.writeHighScores();
+				ToggleHighScores();
 				NewGame();
 			}
 			else {
@@ -216,7 +220,7 @@ void Game::TogglePause() {
 
 void Game::ToggleHighScores() {
 	TogglePause();
-	m_ScoreManager.showHighScores(&m_DisplayManager, MAPWIDTH, MAPHEIGHT);
+	m_ScoreManager.showHighScores(MAPWIDTH, MAPHEIGHT);
 
 }
 

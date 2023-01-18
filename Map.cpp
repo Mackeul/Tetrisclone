@@ -1,7 +1,8 @@
 #include "Map.h"
 
 
-Map::Map() {
+Map::Map(DisplayManager* dm)
+	: m_dm(dm) {
 
 }
 
@@ -23,11 +24,11 @@ void Map::Setup() {
 	}
 }
 
-void Map::Draw(DisplayManager* dm) {
+void Map::Draw() {
 	
 	for (int xmy = 0; xmy < MAPWIDTH; xmy++) {
 		for (int ymx = 0; ymx < MAPHEIGHT; ymx++) {
-			dm->DrawTile(xmy, ymx, tile[xmy][ymx]);
+			m_dm->DrawTile(xmy, ymx, tile[xmy][ymx]);
 		}
 	}
 }

@@ -12,13 +12,15 @@ private:
 	static const int MAPWIDTH = 10;
 	static const int MAPHEIGHT = 30;
 
+	DisplayManager* m_dm;
+
 public:
 
-	Map();
+	Map(DisplayManager* dm);
 	~Map();
 
 	void Setup();
-	void Draw(DisplayManager* dm);
+	void Draw();
 	void IngestPiece(Piece* piece);
 	void RemoveRow(int row);
 	void CheckForClearedRow(Piece* piece);
@@ -27,6 +29,8 @@ public:
 	int GetHeight() { return MAPHEIGHT; }
 
 	int tile[MAPWIDTH][MAPHEIGHT];
+
+
 
 };
 

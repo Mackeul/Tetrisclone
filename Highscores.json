@@ -1,16 +1,1 @@
-{
-	"highscores": [
-		{ "time": "01/01/2001 00:00:01",
-		  "name": "MADMIKE",
-		  "score": 100
-		},
-		{ "time": "01/01/2001 13:00:01",
-		  "name": "CRAZYJO",
-		  "score": 90
-		},
-		{ "time": "01/01/2000 13:45:01",
-		  "name": "GOOFYGAB",
-		  "score": 70
-		}
-	]								
-}
+{"highscores":[{"name":"MADMIKE","score":750,"time":"01/01/2001 00:00:01"},{"name":"GOOFYGAB","score":700,"time":"01/01/2000 13:45:01"},{"name":"CRAZYJO","score":500,"time":"01/01/2001 13:00:01"},{"name":"TEST123","score":440,"time":"23-01-14 12:14"}]}

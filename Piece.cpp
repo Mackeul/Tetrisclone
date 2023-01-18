@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <unordered_map>
 
 #include "nlohmann/json.hpp"
 #include "Log.h"
@@ -9,15 +10,22 @@
 #include "Piece.h"
 
 static std::vector<Piece> all_pieces;
+static std::unordered_map<std::string, Piece> all_pieces_map;
 
 void Piece::Create(Piece& aPiece, int blockType) {
 
-	for (auto it = all_pieces.begin(); it < all_pieces.end(); it++) {
-		if (it->id == blockType) {
-			aPiece = *it;
+	for (const Piece& tmpPiece : all_pieces) {
+		if (tmpPiece.id == blockType) {
+			aPiece = tmpPiece;
 			break;
 		}
 	}
+
+}
+
+void Piece::Create(Piece& aPiece, std::string blockName) {
+
+	aPiece = all_pieces_map[blockName];
 
 }
 
@@ -112,6 +120,7 @@ bool Piece::Load(const std::string& fileName) {  //Load pieces information from 
 			}
 
 			all_pieces.push_back(tmpPiece);
+			all_pieces_map[tmpPiece.name] = tmpPiece;
 		}
 	}
 
@@ -120,6 +129,8 @@ bool Piece::Load(const std::string& fileName) {  //Load pieces information from 
 }
 
 int Piece::NumPieces() {
+
+	//return (int)all_pieces_map.size();
 
 	return (int)all_pieces.size();
 }

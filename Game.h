@@ -57,23 +57,18 @@ protected:
 private:
 
 	static Game* gameInstance;
+	DisplayManager m_DisplayManager;
 
 	ULONGLONG start_time;
 
-	//int score = 0;
-
-	ScoreManager m_ScoreManager;
-
-	DisplayManager m_DisplayManager;
+	ScoreManager m_ScoreManager = ScoreManager(&m_DisplayManager);
 
 	bool GAMEPAUSED = false;
 
 	Piece m_sPrePiece; // preview piece
 	Piece m_sPiece; // the 's' prefixes indicate this is a 'structure'
-	
-	//int Map[MAPWIDTH][MAPHEIGHT + 1]; // the game map
 
-	Map m_Map;
+	Map m_Map = Map(&m_DisplayManager);
 
 	Game() {};
 
