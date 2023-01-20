@@ -35,12 +35,15 @@ public:
 	void loadHighScores();
 	void showHighScores(int mapwidth, int mapheight);
 	void writeHighScores();
-	bool checkForHighscore();
-	void getPlayerName();
+	int checkForHighscore();
+	void getPlayerName(int mapheight, int mapwidth);
+	void handleInput(WPARAM input);
 
 private:
 
 	int m_Score;
+	std::string m_Name;
+	int m_ScorePosition = 0;
 	DisplayManager* m_dm;
 	std::vector<HighScore> HighScores;
 	void sortHighScores() { std::sort(std::begin(HighScores), std::end(HighScores), std::greater()); }

@@ -8,11 +8,6 @@ static Game* theGame = Game::Instance();
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
 
-	//HWND consoleWindow;
-	//AllocConsole();
-	//consoleWindow = FindWindowA("ConsoleWindowClass", NULL);
-	//ShowWindow(consoleWindow, 1);
-
 	Log::Init();
 
     //assign instance to global variable
@@ -108,7 +103,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     }
 
     //clean up program data
-    theGame->Done();
+    theGame->Exit();
 
     //return the wparam from the WM_QUIT message
     return((int)msg.wParam);
@@ -119,42 +114,17 @@ LRESULT CALLBACK TheWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
     //which message did we get?
 
-    if (theGame->IsPaused()) {
-        if (uMsg == WM_KEYDOWN && (wParam == VK_PAUSE || wParam == VK_F1)) {
-            theGame->TogglePause();
-            return(0);
-        }
-    }
+
     switch (uMsg) {
     case WM_KEYDOWN: {
         //check for escape key
         if (wParam == VK_ESCAPE) {
             DestroyWindow(hWndMain);
-            return(0); //handled message
         }
-        else if (wParam == VK_DOWN) { // check for down arrow key
-            theGame->MovePiece(0, 1);
-            return(0); //handled message
-        }
-        else if (wParam == VK_UP || wParam == VK_SPACE) { // check for up arrow key or space bar for block rotation.
-            theGame->RotatePiece();
-            return(0); //handled message
-        }
-        else if (wParam == VK_LEFT) { // check for left arrow key
-            theGame->MovePiece(-1,0);
-            return(0); //handled message
-        }
-        else if (wParam == VK_RIGHT) { // check for right arrow key
-            theGame->MovePiece(1,0);
-            return(0); //handled message
-        }
-        else if (wParam == VK_PAUSE) {
-            theGame->TogglePause();
-            return(0);
-        }
-		else if (wParam == VK_F1) {
-			theGame->ToggleHighScores();
+		else {
+			theGame->handleInput(wParam);
 		}
+		return(0); //handled message
     }
         break;
     case WM_DESTROY: {  //window is being destroyed.

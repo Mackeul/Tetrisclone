@@ -1,0 +1,9 @@
+#pragma once
+
+enum class GameState {
+	STATE_PLAY,
+	STATE_PAUSE,
+	STATE_SHOWHIGHSCORE,
+	STATE_WRITEHIGHSCORE,
+	STATE_END
+};

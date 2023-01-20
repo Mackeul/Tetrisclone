@@ -156,6 +156,8 @@
     <ClInclude Include="BitmapObject.h" />
     <ClInclude Include="DisplayManager.h" />
     <ClInclude Include="Event.h" />
+    <ClInclude Include="GameState.h" />
+    <ClInclude Include="Keys.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Observer.h" />

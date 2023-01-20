@@ -4,11 +4,14 @@
 #include <vector>
 #include <ctime>
 #include <algorithm>
+#include <time.h>
+#include <stdio.h>
 
 #include "ScoreManager.h"
 #include "Event.h"
 #include "Log.h"
 #include "Tile.h"
+#include "Keys.h"
 
 #define HIGHSCORES_FILE "Highscores.json"
 
@@ -56,21 +59,20 @@ void ScoreManager::resetScore() {
 
 void ScoreManager::showHighScores(int mapwidth, int mapheight) {
 
-	for (int x = 0; x < mapwidth; x++) {
-		for (int y = mapheight / 4; y < mapheight; y++) {
-			m_dm->DrawTile(x, y, Tile::GREY);
-		}
-	}
+	int starty = mapheight / 4;
+	int startx = TILESIZE;
 
-	m_dm->Print(1, mapheight / 4, "HIGHSCORES");
+	m_dm->Print(startx, starty, "HIGHSCORES");
 
 	int i = 0;
 	for (auto it = HighScores.begin(); it < HighScores.end(); it++) {
 		i++;
-		std::stringstream aString;
-		aString << it->score << " " << it->name; // not enough room atm for time... << " " << it->time;
-		m_dm->Print(1, mapheight / 4 + i, aString.str());
+		m_dm->Print(startx, starty + i, it->score);
+		m_dm->Print(startx + 5, starty + i, it->name);
 	}
+
+	m_dm->Print(startx, mapheight - 2, "PRESS F1");
+	m_dm->Print(startx, mapheight - 1, "TO CONTINUE");
 
 }
 
@@ -118,6 +120,8 @@ void ScoreManager::writeHighScores() {
 	{
 		using namespace nlohmann;
 
+		HighScores.resize(10);   // Top 10 only.
+
 		json j = { {"highscores",HighScores} };
 
 		std::ofstream outFile(HIGHSCORES_FILE);
@@ -132,17 +136,56 @@ void ScoreManager::writeHighScores() {
 	}
 }
 
-bool ScoreManager::checkForHighscore() {
+int ScoreManager::checkForHighscore() {
 
-	HighScore minHighScore = *std::min_element(HighScores.begin(), HighScores.end());
+	time_t rawtime;
+	struct tm timeinfo;
+	time(&rawtime);
+	localtime_s(&timeinfo, &rawtime);
 
-	return this->m_Score > minHighScore.score;
+	std::ostringstream stm;
+	stm << std::put_time(&timeinfo, "%m-%d-%Y %H:%M:%S");
+
+	int i = 0;
+	for (auto aHighScore : HighScores) {
+		if (m_Score > aHighScore.score) {
+			HighScore newHighScore = { m_Score,"",stm.str()};
+			HighScores.insert(HighScores.begin() + i, newHighScore );
+			break;
+		}
+		++i;
+	}
+
+	m_ScorePosition = i+1;
+
+	return m_ScorePosition;
 }
 
-void ScoreManager::getPlayerName() {
-	// input player name so we can write it in highscores.
-	std::string playerName;
+void ScoreManager::getPlayerName(int mapheight, int mapwidth) {
 
-	std::cout << "Enter name:" << std::endl;
-	std::cin >> playerName;
+	int starty = mapheight / 4;
+	int startx = TILESIZE;
+
+	HighScores.at(m_ScorePosition-1).name = m_Name;
+
+	m_dm->Print(startx, starty, "HIGHSCORES");
+
+	starty++;
+
+	int i = 0;
+	for (auto it = HighScores.begin(); it < HighScores.end(); it++) {
+		m_dm->Print(startx, starty + i, it->score);
+		m_dm->Print(startx + 5, starty + i, it->name);
+		i++;
+	}
+
+	m_dm->Print(startx, mapheight - 2, "ENTER NAME");
+}
+
+void ScoreManager::handleInput(WPARAM input) {
+
+	if (input >= '0' && input <= 'Z') {
+		char a = (char)input;
+		m_Name.push_back(a);
+	}
 }

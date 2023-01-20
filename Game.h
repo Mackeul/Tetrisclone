@@ -22,6 +22,7 @@
 #include "ScoreManager.h"
 #include "DisplayManager.h"
 #include "Tile.h"
+#include "GameState.h"
 
 //const int TILESIZE = 16;
 
@@ -39,17 +40,12 @@ public:
 	bool Init(HWND);
 	void NewGame();
 	void Tick();
-	void Done();
-	void MovePiece(int deltaX, int deltaY);
-	void RotatePiece();
+	void Exit();
 
 	void Paint(HWND);
 
 	bool CollisionTest(const Piece&);
-
-	bool IsPaused();
-	void TogglePause();
-	void ToggleHighScores();
+	void handleInput(WPARAM input);
 
 protected:
 
@@ -59,11 +55,11 @@ private:
 	static Game* gameInstance;
 	DisplayManager m_DisplayManager;
 
+	GameState m_GameState = GameState::STATE_PLAY;
+
 	ULONGLONG start_time;
 
 	ScoreManager m_ScoreManager = ScoreManager(&m_DisplayManager);
-
-	bool GAMEPAUSED = false;
 
 	Piece m_sPrePiece; // preview piece
 	Piece m_sPiece; // the 's' prefixes indicate this is a 'structure'
@@ -72,12 +68,14 @@ private:
 
 	Game() {};
 
-	void Draw();
-	
+	void Draw();	
 	void PrintPaused();
-
 	void PrintScore();
-
 	void SetupNewPiece();
+	void TogglePause();
+	void ToggleHighScores();
+	void MovePiece(int deltaX, int deltaY);
+	void RotatePiece();
+	void EndGame();
 
 };

@@ -12,18 +12,17 @@ Game* Game::Instance() {
 
 void Game::Tick() {
 
-	if (IsPaused())  //do nothing
-		return;
+	if (m_GameState == GameState::STATE_PLAY) {
+		if ((GetTickCount64() - start_time) > (1000 - m_ScoreManager.getScore())) {
+			MovePiece(0, 1);
+			start_time = GetTickCount64();
+		}
 
-	if ((GetTickCount64() - start_time) > (1000 - m_ScoreManager.getScore())) {
-		MovePiece(0, 1);
-		start_time = GetTickCount64();
+		Draw();
 	}
-
-	Draw();
 }
 
-void Game::Done() {
+void Game::Exit() {
 
 	//clean up code goes here
 	mciSendString(L"stop mp3", NULL, 0, NULL);
@@ -44,18 +43,21 @@ bool Game::Init(HWND hWndMain) {
 	// Load the pieces info from file.
 	Piece::Load("Pieces.json");
 
+	mciSendString(L"open \"tetris.mp3\" type mpegvideo alias mp3", NULL, 0, NULL);
+
 	m_ScoreManager.loadHighScores();
 
 	NewGame();
-
-	mciSendString(L"open \"tetris.mp3\" type mpegvideo alias mp3", NULL, 0, NULL);
-	mciSendString(L"play mp3 repeat", NULL, 0, NULL);
 
 	return(true); //return success
 
 }
 
 void Game::NewGame() {
+
+	m_GameState = GameState::STATE_PLAY;
+
+	mciSendString(L"play mp3 repeat", NULL, 0, NULL);
 
 	start_time = GetTickCount64();
 	
@@ -94,7 +96,7 @@ void Game::Draw() { //draw the screen
 
 	PrintScore();
 	
-	if (IsPaused()) {
+	if (m_GameState == GameState::STATE_PAUSE) {
 		PrintPaused();
 	}
 	
@@ -126,12 +128,7 @@ void Game::MovePiece(int deltaX, int deltaY) {
 		if (deltaY == 1) {
 			// Collision detected while moving piece down, piece can no longer move.
 			if (tempPiece.y < 1) {
-				if (m_ScoreManager.checkForHighscore()) {
-					m_ScoreManager.getPlayerName();
-				}
-				m_ScoreManager.writeHighScores();
-				ToggleHighScores();
-				NewGame();
+				EndGame();
 			}
 			else {
 				m_Map.IngestPiece(&m_sPiece);
@@ -201,27 +198,40 @@ bool Game::CollisionTest(const Piece& aPiece) {
 	return false;
 }
 
-bool Game::IsPaused() {
-
-	return GAMEPAUSED;
-}
-
 void Game::TogglePause() {
 
-	GAMEPAUSED = !GAMEPAUSED;
-	if (GAMEPAUSED) {
+	switch(m_GameState) {
+	
+	case GameState::STATE_PLAY:
+		m_GameState = GameState::STATE_PAUSE;
 		mciSendString(L"pause mp3", NULL, 0, NULL);
 		PrintPaused();
-	}
-	else {
+		break;
+	
+	case GameState::STATE_PAUSE:
+		m_GameState = GameState::STATE_PLAY;
 		mciSendString(L"resume mp3", NULL, 0, NULL);
+		break;
+
 	}
 }
 
 void Game::ToggleHighScores() {
-	TogglePause();
-	m_ScoreManager.showHighScores(MAPWIDTH, MAPHEIGHT);
 
+	switch (m_GameState) {
+
+	case GameState::STATE_PLAY:
+		m_GameState = GameState::STATE_SHOWHIGHSCORE;
+		mciSendString(L"pause mp3", NULL, 0, NULL);
+		m_ScoreManager.showHighScores(MAPWIDTH, MAPHEIGHT);
+		break;
+
+	case GameState::STATE_SHOWHIGHSCORE:
+		m_GameState = GameState::STATE_PLAY;
+		mciSendString(L"resume mp3", NULL, 0, NULL);
+		break;
+
+	}
 }
 
 void Game::PrintPaused() {
@@ -229,10 +239,85 @@ void Game::PrintPaused() {
 	//display paused info
 	m_DisplayManager.Print(TILESIZE, MAPHEIGHT / 4 + 4, "GAME PAUSED");
 	m_DisplayManager.Print(TILESIZE + 4, MAPHEIGHT / 4 + 5, "||");
+	m_DisplayManager.Print(TILESIZE, MAPHEIGHT - 2, "PRESS PAUSE");
+	m_DisplayManager.Print(TILESIZE, MAPHEIGHT - 1, "TO CONTINUE");
 }
 
 void Game::PrintScore() {
 
 	m_DisplayManager.Print(TILESIZE, 0, "SCORE");
-	m_DisplayManager.Print(TILESIZE, 0, m_ScoreManager.getScore());
+	m_DisplayManager.Print(TILESIZE+6, 0, m_ScoreManager.getScore());
+}
+
+void Game::handleInput(WPARAM input) {
+
+	switch (m_GameState) {
+
+	case GameState::STATE_PLAY:
+		if (input == VK_DOWN) { // check for down arrow key
+			MovePiece(0, 1);
+		}
+		else if (input == VK_UP || input == VK_SPACE) { // check for up arrow key or space bar for block rotation.
+			RotatePiece();
+		}
+		else if (input == VK_LEFT) { // check for left arrow key
+			MovePiece(-1, 0);
+		}
+		else if (input == VK_RIGHT) { // check for right arrow key
+			MovePiece(1, 0);
+		}
+		else if (input == VK_PAUSE) {
+			TogglePause();
+		}
+		else if (input == VK_F1) {
+			ToggleHighScores();
+		}
+		break;
+
+	case GameState::STATE_PAUSE:
+		if (input == VK_PAUSE) {
+			TogglePause();
+		}
+		break;
+
+	case GameState::STATE_SHOWHIGHSCORE:
+		if (input == VK_F1) {
+			ToggleHighScores();
+		}
+		break;
+
+	case GameState::STATE_END:
+		if (input == VK_SPACE || VK_RETURN) {
+			NewGame();
+		}
+		break;
+
+	case GameState::STATE_WRITEHIGHSCORE:
+		if (input == VK_RETURN) {
+			m_ScoreManager.writeHighScores();
+			m_GameState = GameState::STATE_END;
+		}
+		else {
+			m_ScoreManager.handleInput(input);
+			m_ScoreManager.getPlayerName(MAPHEIGHT, MAPWIDTH);
+		}
+		break;
+
+	}
+}
+
+void Game::EndGame() {
+
+	int score_position = m_ScoreManager.checkForHighscore();
+
+	if ( score_position < 10) {
+		m_GameState = GameState::STATE_WRITEHIGHSCORE;
+		mciSendString(L"seek mp3 at 10", NULL, 0, NULL);
+		mciSendString(L"play mp3", NULL, 0, NULL);
+		m_ScoreManager.getPlayerName(MAPHEIGHT,MAPWIDTH);	
+	}
+	m_DisplayManager.Print(TILESIZE, MAPHEIGHT - 3, "GAME OVER");
+	m_DisplayManager.Print(TILESIZE, MAPHEIGHT - 2, "PRESS SPACE");
+	m_DisplayManager.Print(TILESIZE, MAPHEIGHT - 1, "FOR NEW GAME");
+	mciSendString(L"seek mp3 to start", NULL, 0, NULL);
 }

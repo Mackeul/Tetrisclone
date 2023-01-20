@@ -71,11 +71,12 @@ void DisplayManager::DrawChar(int x, int y, const char letter) { // put a charac
 
 }
 
-// Print integers up to 6 digits with leading zeroes
+// Print integers up to 4 digits with leading zeroes
 void DisplayManager::Print(int x, int y, int number) {
-	int i = 6;
-	while (i <= 11) {
-		int aNum = (int)pow(10, (11 - i));
+
+	int i = 0;
+	while (i < 4) {
+		int aNum = (int)pow(10, (3 - i));
 		DrawChar(x + i, y, (number / aNum) % 10 + '0');
 		number = number % aNum;
 		i++;
