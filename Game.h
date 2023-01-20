@@ -2,7 +2,6 @@
 // tell the compiler to not include many unneeded header files
 #define WIN32_LEAN_AND_MEAN
 
-#include "resource.h"
 #include <windows.h>
 #include <math.h>
 #include <iostream>
@@ -14,19 +13,24 @@
 #include <mciapi.h>
 #pragma comment(lib, "Winmm.lib")
 
-#include "bitmapobject.h"
+#include "resource.h"
 #include "framework.h"
+
 #include "Piece.h"
+#include "Map.h"
+#include "Subject.h"
+#include "ScoreManager.h"
+#include "DisplayManager.h"
+#include "Tile.h"
+#include "GameState.h"
 
-// since we're using square blocks, let's onlyuse a single size.
-const int TILESIZE = 16;
+//const int TILESIZE = 16;
 
-// now for the map...
 const int MAPWIDTH = 10;
 const int MAPHEIGHT = 30;
 const int PREVIEWAREAWIDTH = 8;
 
-class Game {
+class Game : public Subject {
 
 public:
 
@@ -36,18 +40,12 @@ public:
 	bool Init(HWND);
 	void NewGame();
 	void Tick();
-	void Done();
-	void MovePiece(int deltaX, int deltaY);
-	void RotatePiece();
-	void RemoveRow(int);
+	void Exit();
 
-	void PaintMap(HWND);
+	void Paint(HWND);
 
 	bool CollisionTest(const Piece&);
-
-	bool IsPaused();
-	void TogglePause();
-
+	void handleInput(WPARAM input);
 
 protected:
 
@@ -55,39 +53,29 @@ protected:
 private:
 
 	static Game* gameInstance;
+	DisplayManager m_DisplayManager;
+
+	GameState m_GameState = GameState::STATE_PLAY;
 
 	ULONGLONG start_time;
 
-	int score = 0;
-
-	bool GAMEPAUSED = false;
+	ScoreManager m_ScoreManager = ScoreManager(&m_DisplayManager);
 
 	Piece m_sPrePiece; // preview piece
 	Piece m_sPiece; // the 's' prefixes indicate this is a 'structure'
 
-	//map for the program
-	BitMapObject bmoMap;
-
-	//block images
-	BitMapObject bmoTiles;
-	
-	int Map[MAPWIDTH][MAPHEIGHT + 1]; // the game map
+	Map m_Map = Map(&m_DisplayManager);
 
 	Game() {};
 
-	void DrawMap();
-
-	void DrawTile(int, int, int);
-	void DrawChar(int, int, const char);
-	void PrintScore();
+	void Draw();	
 	void PrintPaused();
-
-	void Print(int, int, int);
-	void Print(int, int, std::string);
-
-	void SetPieceInMap();
-	void CheckForClearedRow();
-
+	void PrintScore();
 	void SetupNewPiece();
+	void TogglePause();
+	void ToggleHighScores();
+	void MovePiece(int deltaX, int deltaY);
+	void RotatePiece();
+	void EndGame();
 
 };
