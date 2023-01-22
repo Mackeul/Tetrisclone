@@ -7,6 +7,8 @@ If running outside of MSVS, make sure to copy the blocks.bmp, tetris.mp3, Pieces
 ## Acknowledgements
 * First and foremost, [Gamedev.net](https://www.gamedev.net) where I found the basic game code written by Evil_Greven here: https://www.gamedev.net/forums/topic/192483-tetris-clone-in-an-hour-with-c/ .
 * [@voporak5](https://github.com/voporak5) for his help and guidance (via Intro to Game Programming course at [CGSpectrum](https://cgspectrum.com) ) in making the game code more OO and for guidance on which patterns would work.
+* [@gabime](https://github.com/gabime) for [spdlog](https://github.com/gabime/spdlog) library.
+* [@nlohmann](https://github.com/nlohmann) for [nlohmann/json](https://github.com/nlohmann/json) library.
 * [Powerglove](https://www.powergloveband.com/) for their super awesome Tetris Metal Theme.
 * [Game Programming Patterns](http://gameprogrammingpatterns.com/) website.
 * TheCherno's [C++ YouTube Series](https://www.youtube.com/playlist?list=PLlrATfBNZ98dudnM48yfGUldqGD0S4FFb).
