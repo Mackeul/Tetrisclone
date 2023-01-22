@@ -28,6 +28,7 @@ In addition to the basic game, the following basic features were added:
 * Implementing __3rd party libraries__:
   * [spdlog](https://github.com/gabime/spdlog) for nice formatting in log output (file or stdout).
   * [nlohmann/json](https://github.com/nlohmann/json) for simple and robust JSON reading and writing.
- * __Windows Application Programming__. 
+ * __Windows Application Programming__.
+ * __MP3 Audio Playback__.
 
 
