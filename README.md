@@ -24,9 +24,10 @@ In addition to the basic game, the following basic features were added:
 * __Observer Pattern__ for scoring.
 * __Simplified State Machine__ for handling user input for highscores vs regular game input.
 * __Bit Blitting__ for bitmap textures (blocks and text).
-* __Collision detection__
+* __Collision detection__.
 * Implementing __3rd party libraries__:
   * [spdlog](https://github.com/gabime/spdlog) for nice formatting in log output (file or stdout).
   * [nlohmann/json](https://github.com/nlohmann/json) for simple and robust JSON reading and writing.
+ * __Windows Application Programming__. 
 
 
